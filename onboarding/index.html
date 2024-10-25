@@ -1,0 +1,408 @@
+<div id="main"></div>
+<script>
+  // constrants
+  const RESOURCE_ID = 6626;
+
+  // Utility function to show/hide elements
+  function toggleVisibility(element, shouldShow) {
+    element.style.display = shouldShow ? "block" : "none";
+  }
+
+  // Handle business type selection change
+  function handleBusinessTypeChange() {
+    const otherField = document.querySelector(
+      'input[data-name="OtherBusinessType"]'
+    );
+    const selectField = document.querySelector(
+      'select[data-name="BusinessType"]'
+    );
+    const otherElement = otherField.parentElement.parentElement;
+
+    if (selectField.value === "Other") {
+      toggleVisibility(otherElement, true);
+    } else {
+      toggleVisibility(otherElement, false);
+    }
+  }
+
+  // Handle countries selection change
+  function handleCountriesChange() {
+    const otherCountryField = document.querySelector(
+      'input[data-name="OtherCountry"]'
+    );
+    const otherCountryElement = otherCountryField.parentElement.parentElement;
+
+    if (
+      form.config.dataset.SelectedCountries &&
+      form.config.dataset.SelectedCountries.includes("Other")
+    ) {
+      toggleVisibility(otherCountryElement, true);
+    } else {
+      toggleVisibility(otherCountryElement, false);
+    }
+  }
+
+  // Prepare the dataset for submission
+  function prepareFormData() {
+    const datasetForSubmit = { ...form.config.dataset };
+
+    if (datasetForSubmit.SelectedCountries.includes("Other")) {
+      let countriesArray = datasetForSubmit.SelectedCountries.split(",");
+      countriesArray = countriesArray.filter((country) => country !== "Other");
+      datasetForSubmit.SelectedCountries = countriesArray.join(",");
+    }
+
+    return datasetForSubmit;
+  }
+
+  // Handle form submission
+  async function submitForm() {
+    try {
+      const datasetForSubmit = prepareFormData();
+      mo.fn.overlay.show({ loading: true });
+
+      const response = await new Promise((resolve, reject) => {
+        crud.create(RESOURCE_ID, datasetForSubmit, function (res) {
+          if (res) resolve(res);
+          else reject(new Error("Submission failed"));
+        });
+      });
+
+      mo.fn.overlay.hide();
+      mo.fn.modal.show({
+        title: "Success",
+        content: "Your form has been successfully submitted!",
+        ctaLabel: "Close",
+        ctaCallback: mo.fn.modal.hide,
+      });
+
+      const grid = $("#gridContainer").data("KendoGrid");
+      if (grid) grid.dataSource.read();
+    } catch (error) {
+      mo.fn.overlay.hide();
+      mo.fn.modal.show({
+        title: "Error",
+        content: "Failed to submit the form. Please try again.",
+        ctaLabel: "Close",
+        ctaCallback: mo.fn.modal.hide,
+      });
+    }
+  }
+
+  function initializeGrid(gridContainer) {
+    const dataSource = new kendo.data.DataSource({
+      type: "rfb-v2",
+      transport: {
+        read: {
+          url: "/form/data-set-provider/v2/1884/Robert_Test/kendo/data/search",
+          type: "POST",
+        },
+        create: {
+          url: "/form/data-set-provider/v2/1884/Robert_Test/kendo/data",
+          dataType: "json",
+          type: "POST",
+        },
+        update: {
+          url: "/form/data-set-provider/v2/1884/Robert_Test/kendo/data",
+          dataType: "json",
+          type: "PUT",
+        },
+        destroy: {
+          url: "/form/data-set-provider/v2/1884/Robert_Test/kendo/data",
+          dataType: "json",
+          type: "DELETE",
+        },
+      },
+      schema: {
+        model: {
+          id: "EntryId",
+          fields: {
+            EntryId: { type: "number", editable: false },
+            Created: { type: "date", editable: false },
+            BusinessType: { type: "string" },
+            OtherBusinessType: { type: "string" },
+            SelectedCountries: { type: "string" },
+            OtherCountry: { type: "string" },
+            SelectedDateTime: { type: "date" },
+          },
+        },
+      },
+      serverPaging: true,
+      pageSize: 15,
+      serverFiltering: true,
+      serverSorting: true,
+      size: "small",
+      sort: { field: "EntryId", dir: "desc" },
+    });
+
+    console.log("this is datasource", dataSource);
+
+    // Initialize the Kendo Grid
+    $(gridContainer).kendoGrid({
+      dataSource: dataSource,
+      filterable: true,
+      sortable: true,
+      editable: "incell",
+      resizable: true,
+      reorderable: true,
+      pageable: {
+        refresh: true,
+        pageSizes: true,
+        buttonCount: 5,
+      },
+      groupable: true,
+      toolbar: ["create", "save", "excel", "pdf"],
+      excel: {
+        fileName: "Kendo UI Grid Export.xlsx",
+        proxyURL: "https://demos.telerik.com/kendo-ui/service/export",
+        filterable: true,
+      },
+      pdf: {
+        allPages: true,
+        avoidLinks: true,
+        // paperSize: "A4",
+        // margin: { top: "2cm", left: "1cm", right: "1cm", bottom: "1cm" },
+        // landscape: true,
+        // repeatHeader: true,
+        // template: $("#page-template").html(),
+        // scale: 0.8,
+        fileName: "Kendo UI Grid Export.pdf",
+      },
+      // pdfExport: function(e) {
+      //   e.sender.wrapperClone.addClass('k-clone');
+      // },
+      columns: [
+        { field: "EntryId", title: "EntryId", locked: true, width: "100px" },
+        {
+          field: "Created",
+          title: "Created Date",
+          format: "{0:MM/dd/yyyy}",
+          locked: true,
+          filterable: {
+            ui: "datepicker",
+          },
+          width: "150px",
+        },
+        {
+          field: "BusinessType",
+          title: "Company Business Type",
+          template: function (dataItem) {
+            return dataItem.BusinessType === "Other"
+              ? `Other: ${dataItem.OtherBusinessType}`
+              : dataItem.BusinessType;
+          },
+          width: "200px",
+        },
+        {
+          field: "SelectedCountries",
+          title: "Countries",
+          template: function (dataItem) {
+            let countries = dataItem.SelectedCountries;
+            if (dataItem.OtherCountry) {
+              countries += `, ${dataItem.OtherCountry}`;
+            }
+            return countries;
+          },
+          width: "250px",
+        },
+        {
+          field: "SelectedDateTime",
+          title: "Datetime",
+          format: "{0:MM/dd/yyyy hh:mm tt}",
+          width: "200px",
+        },
+        { command: [], title: "&nbsp;", width: "150px" },
+      ],
+      editable: "inline",
+      save: function (e) {
+        dataSource.read();
+      },
+    });
+  }
+
+  const form = {
+    config: {
+      page: 0,
+      dataset: {},
+      pages: [
+        // Page 1: Agreement
+        {
+          title: "Agreement",
+          subtitle: "",
+          description: "",
+          nav: true,
+          structure: [
+            {
+              header: "",
+              description: "",
+              group: [
+                [
+                  {
+                    label: "Agreement Confirmed",
+                    data: "UserAgreementStatus",
+                    required: true,
+                    type: "toggle",
+                    values: ["N", "Y"],
+                  },
+                ],
+              ],
+            },
+            {
+              header: "",
+              description: "",
+              group: [
+                [
+                  {
+                    label: "Email:",
+                    data: "UserEmail",
+                    type: "email",
+                    placeholder: "Please input email address",
+                    validation: ["isEmail"],
+                    required: true,
+                  },
+                ],
+              ],
+            },
+          ],
+        },
+        // Page 2: Company Information
+        {
+          title: "Company Information",
+          subtitle: "",
+          description: "",
+          nav: true,
+          structure: [
+            {
+              header: "",
+              description: "",
+              group: [
+                [
+                  {
+                    type: "select",
+                    data: "BusinessType",
+                    label: "Company Business Type",
+                    values: ["Distributor", "Reseller", "Provider", "Other"],
+                    options: ["Distributor", "Reseller", "Provider", "Other"],
+                    required: true,
+                    change: handleBusinessTypeChange,
+                  },
+
+                  {
+                    type: "text",
+                    data: "OtherBusinessType",
+                    label: "Please specify if Other",
+                    validation: ["minLen|1"],
+                  },
+                ],
+                [
+                  {
+                    type: "radio",
+                    data: "UserSelectedOption",
+                    label: "Choose",
+                    values: ["Yes", "No"],
+                    required: true,
+                  },
+                ],
+              ],
+            },
+          ],
+          callback: handleBusinessTypeChange,
+        },
+        // Page 3: Date & Country Selection
+        {
+          title: "Select date & country",
+          substitle: "",
+          description: "",
+          nav: true,
+          structure: [
+            {
+              header: "",
+              description: "",
+              group: [
+                [
+                  {
+                    type: "datetime",
+                    data: "SelectedDateTime",
+                    label: "Datetime",
+                    required: true,
+                  },
+                ],
+                [
+                  {
+                    type: "multiselect",
+                    data: "SelectedCountries",
+                    label: "Select Countries",
+                    values: [
+                      "USA",
+                      "Canada",
+                      "Germany",
+                      "France",
+                      "Japan",
+                      "India",
+                      "China",
+                      "Brazil",
+                      "Australia",
+                      "Mexico",
+                      "Other",
+                    ],
+                    required: true,
+                    change: handleCountriesChange,
+                  },
+                  {
+                    type: "text",
+                    data: "OtherCountry",
+                    label: "Please specify if Other",
+                    validation: ["minLen|1"],
+                  },
+                ],
+              ],
+            },
+          ],
+          callback: handleCountriesChange,
+        },
+      ],
+      onSubmit: submitForm,
+    },
+    init: function () {
+      hpe.ui.tabs(
+        {
+          dom: document.querySelector("#main"),
+          tabs: [
+            {
+              label: "Grid",
+              id: "Grid",
+            },
+            {
+              label: "Form",
+              id: "Form",
+            },
+          ],
+        },
+        function (all) {
+          const gridTab = all[0];
+          const formTab = all[1];
+
+          formTab.innerHTML = '<div id="formContainer"></div>';
+          form.config.dom = formTab.querySelector("#formContainer");
+          nbsf.init(form.config, form.config.page);
+
+          gridTab.innerHTML = '<div id="gridContainer"></div>';
+          initializeGrid(gridTab.querySelector("#gridContainer"));
+        }
+      );
+    },
+  };
+
+  const main = {
+    init: function () {
+      hpe.supplies.crud();
+      hpe.supplies.mojs();
+      hpe.supplies.nbsf();
+      hpe.supplies.q.end(function () {
+        mo.init();
+        form.init();
+      });
+    },
+  };
+  main.init();
+</script>
