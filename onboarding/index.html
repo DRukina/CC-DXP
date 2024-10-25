@@ -128,7 +128,7 @@
 
         const viewForm = form;
         // disabled: true in form object
-        setDisabledProperty(form.config, true);
+        // setDisabledProperty(form.config, true);
 
         firstTab.innerHTML = '<div id="firstTab"></div>';
         form.config.dom = firstTab.querySelector("#firstTab");
@@ -263,161 +263,165 @@
     }
   }
 
-  function initializeGrid(gridContainer) {
-    const dataSource = new kendo.data.DataSource({
-      type: "rfb-v2",
-      transport: {
-        read: {
-          url: "/form/data-set-provider/v2/1884/Robert_Test/kendo/data/search",
-          type: "POST",
-        },
-        create: {
-          url: "/form/data-set-provider/v2/1884/Robert_Test/kendo/data",
-          dataType: "json",
-          type: "POST",
-        },
-        update: {
-          url: "/form/data-set-provider/v2/1884/Robert_Test/kendo/data",
-          dataType: "json",
-          type: "PUT",
-        },
-        destroy: {
-          url: "/form/data-set-provider/v2/1884/Robert_Test/kendo/data",
-          dataType: "json",
-          type: "DELETE",
-        },
-      },
-      schema: {
-        model: {
-          id: "EntryId",
-          fields: {
-            EntryId: { type: "number", editable: false },
-            Created: { type: "date", editable: false },
-            BusinessType: { type: "string" },
-            OtherBusinessType: { type: "string" },
-            SelectedCountries: { type: "string" },
-            OtherCountry: { type: "string" },
-            SelectedDateTime: { type: "date" },
+
+  
+  const grid = {
+    config: {
+      dom: document.querySelector("#main"),
+      dataSource: new kendo.data.DataSource({
+        type: "rfb-v2",
+        transport: {
+          read: {
+            url: "/form/data-set-provider/v2/1884/Robert_Test/kendo/data/search",
+            type: "POST",
+          },
+          create: {
+            url: "/form/data-set-provider/v2/1884/Robert_Test/kendo/data",
+            dataType: "json",
+            type: "POST",
+          },
+          update: {
+            url: "/form/data-set-provider/v2/1884/Robert_Test/kendo/data",
+            dataType: "json",
+            type: "PUT",
+          },
+          destroy: {
+            url: "/form/data-set-provider/v2/1884/Robert_Test/kendo/data",
+            dataType: "json",
+            type: "DELETE",
           },
         },
-      },
-      serverPaging: true,
-      pageSize: 15,
-      serverFiltering: true,
-      serverSorting: true,
-      size: "small",
-      sort: { field: "EntryId", dir: "desc" },
-    });
-
-    console.log("this is datasource", dataSource);
-
-    // Initialize the Kendo Grid
-    $(gridContainer).kendoGrid({
-      dataSource: dataSource,
-      filterable: true,
-      sortable: true,
-      editable: "incell",
-      resizable: true,
-      reorderable: true,
-      pageable: {
-        refresh: true,
-        pageSizes: true,
-        buttonCount: 5,
-      },
-      groupable: true,
-      toolbar: ["create", "excel"],
-      excel: {
-        fileName: "Kendo UI Grid Export.xlsx",
-        proxyURL: "https://demos.telerik.com/kendo-ui/service/export",
+        schema: {
+          model: {
+            id: "EntryId",
+            fields: {
+              EntryId: { type: "number", editable: false },
+              Created: { type: "date", editable: false },
+              BusinessType: { type: "string" },
+              OtherBusinessType: { type: "string" },
+              SelectedCountries: { type: "string" },
+              OtherCountry: { type: "string" },
+              SelectedDateTime: { type: "date" },
+            },
+          },
+        },
+        serverPaging: true,
+        pageSize: 15,
+        serverFiltering: true,
+        serverSorting: true,
+        size: "small",
+        sort: { field: "EntryId", dir: "desc" },
+      }),
+    },
+    init: function () {
+      $(this.config.dom).kendoGrid({
+        dataSource: this.config.dataSource,
         filterable: true,
-      },
-      columns: [
-        { field: "EntryId", title: "EntryId", locked: true, width: "100px" },
-        {
-          field: "Created",
-          title: "Created Date",
-          format: "{0:MM/dd/yyyy}",
-          locked: true,
-          filterable: {
-            ui: "datepicker",
-          },
-          width: "150px",
+        sortable: true,
+        editable: "incell",
+        resizable: true,
+        reorderable: true,
+        pageable: {
+          refresh: true,
+          pageSizes: true,
+          buttonCount: 5,
         },
-        {
-          field: "BusinessType",
-          title: "Company Business Type",
-          template: function (dataItem) {
-            return dataItem.BusinessType === "Other"
-              ? `Other: ${dataItem.OtherBusinessType}`
-              : dataItem.BusinessType;
-          },
-          width: "200px",
+        groupable: true,
+        toolbar: ["create", "excel"],
+        excel: {
+          fileName: "Kendo UI Grid Export.xlsx",
+          proxyURL: "https://demos.telerik.com/kendo-ui/service/export",
+          filterable: true,
         },
-        {
-          field: "SelectedCountries",
-          title: "Countries",
-          template: function (dataItem) {
-            let countries = dataItem.SelectedCountries;
-            if (dataItem.OtherCountry) {
-              countries += `, ${dataItem.OtherCountry}`;
-            }
-            return countries;
-          },
-          width: "250px",
-        },
-        {
-          field: "SelectedDateTime",
-          title: "Datetime",
-          format: "{0:MM/dd/yyyy hh:mm tt}",
-          width: "200px",
-        },
-        {
-          command: [
-            {
-              name: "editButton",
-              text: "Edit",
-              click: function (e) {
-                const dataItem = this.dataItem(
-                  $(e.currentTarget).closest("tr")
-                );
-                populateFormForEdit(dataItem);
-              },
+        columns: [
+          { field: "EntryId", title: "EntryId", locked: true, width: "100px" },
+          {
+            field: "Created",
+            title: "Created Date",
+            format: "{0:MM/dd/yyyy}",
+            locked: true,
+            filterable: {
+              ui: "datepicker",
             },
-            {
-              name: "deleteButton",
-              text: "Delete",
-              click: function (e) {
-                const dataItem = this.dataItem(
-                  $(e.currentTarget).closest("tr")
-                );
-                openDeleteConfirmationModal(dataItem.EntryId);
-              },
+            width: "150px",
+          },
+          {
+            field: "BusinessType",
+            title: "Company Business Type",
+            template: function (dataItem) {
+              return dataItem.BusinessType === "Other"
+                ? `Other: ${dataItem.OtherBusinessType}`
+                : dataItem.BusinessType;
             },
-            {
-              name: "view",
-              text: "View",
-              click: function (e) {
-                const dataItem = this.dataItem(
-                  $(e.currentTarget).closest("tr")
-                );
-                populateFormForView(dataItem); // Call function to populate and open modal
-              },
+            width: "200px",
+          },
+          {
+            field: "SelectedCountries",
+            title: "Countries",
+            template: function (dataItem) {
+              let countries = dataItem.SelectedCountries;
+              if (dataItem.OtherCountry) {
+                countries += `, ${dataItem.OtherCountry}`;
+              }
+              return countries;
             },
-          ],
-          title: "&nbsp;",
-          width: "150px",
+            width: "250px",
+          },
+          {
+            field: "SelectedDateTime",
+            title: "Datetime",
+            format: "{0:MM/dd/yyyy hh:mm tt}",
+            width: "200px",
+          },
+          {
+            command: [
+              {
+                name: "editButton",
+                text: "Edit",
+                click: function (e) {
+                  const dataItem = this.dataItem(
+                    $(e.currentTarget).closest("tr")
+                  );
+                  populateFormForEdit(dataItem);
+                },
+              },
+              {
+                name: "deleteButton",
+                text: "Delete",
+                click: function (e) {
+                  const dataItem = this.dataItem(
+                    $(e.currentTarget).closest("tr")
+                  );
+                  openDeleteConfirmationModal(dataItem.EntryId);
+                },
+              },
+              {
+                name: "view",
+                text: "View",
+                click: function (e) {
+                  const dataItem = this.dataItem(
+                    $(e.currentTarget).closest("tr")
+                  );
+                  populateFormForView(dataItem); // Call function to populate and open modal
+                },
+              },
+            ],
+            title: "&nbsp;",
+            width: "150px",
+          },
+        ],
+        editable: "false",
+        save: function (e) {
+          dataSource.read();
         },
-      ],
-      editable: "false",
-      save: function (e) {
-        dataSource.read();
-      },
-    });
-  }
+      });
+    },
+  };
 
   const form = {
     config: {
       page: 0,
+      dom: document.querySelector("#main"),
       dataset: {},
       pages: [
         // Page 1: Agreement
@@ -597,7 +601,8 @@
           form.init();
 
           gridTab.innerHTML = '<div id="gridTab"></div>';
-          initializeGrid(gridTab.querySelector("#gridTab"));
+          grid.config.dom = gridTab.querySelector("#gridTab");
+          grid.init();
         }
       );
     },
