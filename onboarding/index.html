@@ -4,267 +4,248 @@
   const RESOURCE_ID = 6626;
   let currentEntryId = null;
 
-  // Utility function to show/hide elements
-  function toggleVisibility(element, shouldShow) {
-    element.style.display = shouldShow ? "block" : "none";
-  }
-
-  function setDisabledProperty(obj, isViewMode) {
-    for (const key in obj) {
-      if (obj.hasOwnProperty(key)) {
-        if (key === "disabled") {
-          obj[key] = isViewMode;
-        } else if (typeof obj[key] === "object" && obj[key] !== null) {
-          setDisabledProperty(obj[key]);
-        }
+  // Utility function
+  const utils = {
+    toggleVisibility: (element, shouldShow) => {
+      element.style.display = shouldShow ? "block" : "none";
+    },
+    clickTab: (tabId) => {
+      const tabElement = document.querySelector(`span[tab-id="${tabId}"]`);
+      if (tabElement) {
+        tabElement.click();
+      } else {
+        console.log(`Tab with ID "${tabId}" not found.`);
       }
-    }
-  }
+    },
+    refreshGridData: () => {
+      const grid = $("#gridTab").data("kendoGrid");
+      if (grid) grid.dataSource.read();
+      console.warn(grid);
+    },
+  };
 
-  function clickTab(tabId) {
-    const tabElement = document.querySelector(`span[tab-id="${tabId}"]`);
-    if (tabElement) {
-      tabElement.click();
-    } else {
-      console.log(`Tab with ID "${tabId}" not found.`);
-    }
-  }
+  const crudOperations = {
+    createEntry: (dataset) =>
+      new Promise((resolve, reject) => {
+        crud.create(RESOURCE_ID, dataset, function (res) {
+          if (res) resolve(res);
+          else reject(new Error("Creation failed"));
+        });
+      }),
+    updateEntry: (entryId, dataset) =>
+      new Promise((resolve, reject) => {
+        crud.update(RESOURCE_ID, entryId, dataset, function (res) {
+          if (res) resolve(res);
+          else reject(new Error("Update failed"));
+        });
+      }),
+    deleteEntry: (entryId) =>
+      new Promise((resolve, reject) => {
+        crud.destroy(RESOURCE_ID, entryId, function (res) {
+          if (res) resolve(res);
+          else reject(new Error("Deletion failed"));
+        });
+      }),
+  };
 
-  function refreshGridData() {
-    const grid = $("#gridContainer").data("KendoGrid");
-    if (grid) grid.dataSource.read();
-    console.warn(grid);
-  }
+  const modalHelpers = {
+    modalWithCloseBtn: function (title, message) {
+      mo.fn.modal.show({
+        title,
+        content: message,
+        ctaLabel: "Close",
+        ctaCallback: mo.fn.modal.hide,
+      });
+    },
+    openDeleteConfirmationModal: function (entryId) {
+      mo.fn.modal.show({
+        title: "Confirm Deletion",
+        content: "Are you sure you want to delete the record?",
+        ctaLabel: "Yes",
+        ctaCallback: async () => {
+          try {
+            await crudOperations.deleteEntry(entryId);
+            this.modalWithCloseBtn("Success", "Record deleted successfully.");
+          } catch (error) {
+            console.log("error occured");
+            this.modalWithCloseBtn(
+              "Error",
+              "Failed to delete the record. Please try again."
+            );
+          } finally {
+            // mo.fn.modal.hide();
+            utils.refreshGridData();
+          }
+        },
+        close: true,
+        closeLabel: "No",
+      });
+    },
+  };
 
-  // Handle business type selection change
-  function handleBusinessTypeChange() {
-    const otherField = document.querySelector(
-      'input[data-name="OtherBusinessType"]'
-    );
-    const selectField = document.querySelector(
-      'select[data-name="BusinessType"]'
-    );
-    const otherElement = otherField.parentElement.parentElement;
+  const formActions = {
+    handleBusinessTypeChange: () => {
+      const otherField = document.querySelector(
+        'input[data-name="OtherBusinessType"]'
+      );
+      const selectField = document.querySelector(
+        'select[data-name="BusinessType"]'
+      );
+      const otherElement = otherField.parentElement.parentElement;
 
-    if (selectField.value === "Other") {
-      toggleVisibility(otherElement, true);
-    } else {
-      toggleVisibility(otherElement, false);
-    }
-  }
-
-  // Handle countries selection change
-  function handleCountriesChange() {
-    const otherCountryField = document.querySelector(
-      'input[data-name="OtherCountry"]'
-    );
-    const otherCountryElement = otherCountryField.parentElement.parentElement;
-
-    if (
-      form.config.dataset.SelectedCountries &&
-      form.config.dataset.SelectedCountries.includes("Other")
-    ) {
-      toggleVisibility(otherCountryElement, true);
-    } else {
-      toggleVisibility(otherCountryElement, false);
-    }
-  }
-
-  // Function to populate form with data for editing
-  function populateFormForEdit(dataItem) {
-    Object.keys(dataItem).forEach((key) => {
-      form.config.dataset[key] = dataItem[key];
-    });
-
-    currentEntryId = dataItem.EntryId;
-
-    clickTab("Form");
-
-    nbsf.init(form.config, form.config.page);
-  }
-
-  // Function to populate form with data for view
-  function populateFormForView(dataItem) {
-    // Object.keys(dataItem).forEach((key) => {
-    //   form.config.dataset[key] = dataItem[key]; // Populate the dataset
-    // });
-
-    const modalContent = `
-    <div>
-      <div id="viewTabs"></div>
-    </div>
-  `;
-
-    // Show the modal using your overlay utility
-    mo.fn.modal.show({
-      title: "View Details",
-      content: modalContent,
-      ctaLabel: "Close",
-      close: true,
-    });
-
-    hpe.ui.tabs(
-      {
-        dom: document.querySelector("#viewTabs"),
-        tabs: [
-          {
-            label: "Agreement",
-            id: "First",
-          },
-          {
-            label: "Company Information",
-            id: "Second",
-          },
-          {
-            label: "Select date & country",
-            id: "Third",
-          },
-        ],
-      },
-      function (all) {
-        const firstTab = all[0];
-        const secondTab = all[1];
-        const thirdTab = all[2];
-
-        const viewForm = form;
-        // disabled: true in form object
-        // setDisabledProperty(form.config, true);
-
-        firstTab.innerHTML = '<div id="firstTab"></div>';
-        form.config.dom = firstTab.querySelector("#firstTab");
-        form.config.pages[0].nav = false;
-        form.config.pages[0].disabled = true;
-        nbsf.init(form.config, 0);
-
-        secondTab.innerHTML = '<div id="secondTab"></div>';
-        form.config.dom = secondTab.querySelector("#secondTab");
-
-        nbsf.init(form.config, 1);
-
-        thirdTab.innerHTML = '<div id="thirdTab"></div>';
-        form.config.dom = thirdTab.querySelector("#thirdTab");
-        form.config.pages[2].nav = false;
-        nbsf.init(form.config, 2);
+      if (selectField.value === "Other") {
+        utils.toggleVisibility(otherElement, true);
+      } else {
+        utils.toggleVisibility(otherElement, false);
       }
-    );
-  }
+    },
+    handleCountriesChange: () => {
+      const otherCountryField = document.querySelector(
+        'input[data-name="OtherCountry"]'
+      );
+      const otherCountryElement = otherCountryField.parentElement.parentElement;
 
-  // Prepare the dataset for submission
-  function prepareFormData() {
-    const datasetForSubmit = {
-      BusinessType: form.config.dataset.BusinessType || "",
-      OtherBusinessType: form.config.dataset.OtherBusinessType || "",
-      OtherCountry: form.config.dataset.OtherCountry || "",
-      SelectedCountries: form.config.dataset.SelectedCountries || "",
-      SelectedDateTime: form.config.dataset.SelectedDateTime || "",
-      UserAgreementStatus: form.config.dataset.UserAgreementStatus || "N",
-      UserEmail: form.config.dataset.UserEmail || "",
-      UserSelectedOption: form.config.dataset.UserSelectedOption || "No",
-    };
+      if (
+        form.config.dataset.SelectedCountries &&
+        form.config.dataset.SelectedCountries.includes("Other")
+      ) {
+        utils.toggleVisibility(otherCountryElement, true);
+      } else {
+        utils.toggleVisibility(otherCountryElement, false);
+      }
+    },
+    submitForm: async () => {
+      try {
+        const datasetForSubmit = formActions.prepareFormData();
+        mo.fn.overlay.show({ loading: true });
 
-    if (datasetForSubmit.SelectedCountries.includes("Other")) {
-      let countriesArray = datasetForSubmit.SelectedCountries.split(",");
-      countriesArray = countriesArray.filter((country) => country !== "Other");
-      datasetForSubmit.SelectedCountries = countriesArray.join(",");
-    }
+        const response =
+          currentEntryId === null
+            ? await crudOperations.createEntry(datasetForSubmit)
+            : await crudOperations.updateEntry(
+                currentEntryId,
+                datasetForSubmit
+              );
 
-    return datasetForSubmit;
-  }
+        mo.fn.overlay.hide();
+        modalHelpers.modalWithCloseBtn(
+          "Success",
+          "Your form has been successfully submitted!"
+        );
 
-  async function createEntry(dataset) {
-    return new Promise((resolve, reject) => {
-      crud.create(RESOURCE_ID, dataset, function (res) {
-        if (res) resolve(res);
-        else reject(new Error("Creation failed"));
-      });
-    });
-  }
-
-  async function updateEntry(entryId, dataset) {
-    return new Promise((resolve, reject) => {
-      crud.update(RESOURCE_ID, entryId, dataset, function (res) {
-        if (res) resolve(res);
-        else reject(new Error("Update failed"));
-      });
-    });
-  }
-
-  async function deleteEntry(entryId) {
-    return new Promise((resolve, reject) => {
-      crud.destroy(RESOURCE_ID, entryId, function (res) {
-        if (res) resolve(res);
-        else reject(new Error("Deletion failed"));
-      });
-    });
-  }
-
-  function showSuccessModal(message) {
-    mo.fn.modal.show({
-      title: "Success",
-      content: message,
-      ctaLabel: "Close",
-      ctaCallback: mo.fn.modal.hide,
-    });
-  }
-
-  function showErrorModal(message) {
-    mo.fn.modal.show({
-      title: "Error",
-      content: message,
-      ctaLabel: "Close",
-      ctaCallback: mo.fn.modal.hide,
-    });
-  }
-
-  function openDeleteConfirmationModal(entryId) {
-    mo.fn.modal.show({
-      title: "Confirm Deletion",
-      content: "Are you sure you want to delete the record?",
-      ctaLabel: "Yes",
-      ctaCallback: async () => {
-        try {
-          await deleteEntry(entryId);
-          showSuccessModal("Record deleted successfully.");
-        } catch (error) {
-          showErrorModal("Failed to delete the record. Please try again.");
-        } finally {
-          mo.fn.modal.hide();
-          refreshGridData(); // Refresh the grid data after deletion
-        }
-      },
-      close: true,
-      closeLabel: "No",
-    });
-  }
-
-  // Handle form submission
-  async function submitForm() {
-    try {
-      const datasetForSubmit = prepareFormData();
-      mo.fn.overlay.show({ loading: true });
-
-      const response =
-        currentEntryId === null
-          ? await createEntry(datasetForSubmit)
-          : await updateEntry(currentEntryId, datasetForSubmit);
-
-      mo.fn.overlay.hide();
-      showSuccessModal("Your form has been successfully submitted!");
-
-      if (currentEntryId !== null) {
-        clickTab("Grid");
+        // if (currentEntryId !== null) {
+        utils.clickTab("Grid");
         currentEntryId = null;
-        refreshGridData();
+        // }
+        utils.refreshGridData();
+      } catch (error) {
+        mo.fn.overlay.hide();
+        modalHelpers.modalWithCloseBtn(
+          "Error",
+          "Failed to submit the form. Please try again."
+        );
+        console.error(error);
       }
-    } catch (error) {
-      mo.fn.overlay.hide();
-      showErrorModal("Failed to submit the form. Please try again.");
-      console.error(error);
-    }
-  }
+    },
+    populateFormForEdit: (dataItem) => {
+      Object.keys(dataItem).forEach((key) => {
+        form.config.dataset[key] = dataItem[key];
+      });
 
+      currentEntryId = dataItem.EntryId;
 
-  
+      utils.clickTab("Form");
+
+      nbsf.init(form.config, form.config.page);
+    },
+    prepareFormData: () => {
+      const datasetForSubmit = {
+        BusinessType: form.config.dataset.BusinessType || "",
+        OtherBusinessType: form.config.dataset.OtherBusinessType || "",
+        OtherCountry: form.config.dataset.OtherCountry || "",
+        SelectedCountries: form.config.dataset.SelectedCountries || "",
+        SelectedDateTime: form.config.dataset.SelectedDateTime || "",
+        UserAgreementStatus: form.config.dataset.UserAgreementStatus || "N",
+        UserEmail: form.config.dataset.UserEmail || "",
+        UserSelectedOption: form.config.dataset.UserSelectedOption || "No",
+      };
+      console.log('this is date and time', datasetForSubmit.SelectedDateTime);
+      
+      if (datasetForSubmit.SelectedCountries.includes("Other")) {
+        let countriesArray = datasetForSubmit.SelectedCountries.split(",");
+        countriesArray = countriesArray.filter(
+          (country) => country !== "Other"
+        );
+        datasetForSubmit.SelectedCountries = countriesArray.join(",");
+      }
+
+      return datasetForSubmit;
+    },
+    populateFormForView: (dataItem) => {
+      const modalContent = `
+        <div>
+          <div id="viewTabs"></div>
+        </div>
+      `;
+
+      modalHelpers.modalWithCloseBtn("View Details", modalContent);
+
+      hpe.ui.tabs(
+        {
+          dom: document.querySelector("#viewTabs"),
+          tabs: [
+            {
+              label: "Agreement",
+              id: "First",
+            },
+            {
+              label: "Company Information",
+              id: "Second",
+            },
+            {
+              label: "Select date & country",
+              id: "Third",
+            },
+          ],
+        },
+        function (all) {
+          const firstTab = all[0];
+          const secondTab = all[1];
+          const thirdTab = all[2];
+
+          const viewForm = form;
+
+          Object.keys(dataItem).forEach((key) => {
+            viewForm.config.dataset[key] = dataItem[key]; // Populate the dataset
+          });
+
+          firstTab.innerHTML = '<div id="firstTab"></div>';
+          viewForm.config.dom = firstTab.querySelector("#firstTab");
+          viewForm.config.pages[0].nav = false;
+          viewForm.config.pages[0].structure[0].group[0][0].disabled = true;
+          viewForm.config.pages[0].structure[1].group[0][0].disabled = true;
+          nbsf.init(viewForm.config, 0);
+
+          secondTab.innerHTML = '<div id="secondTab"></div>';
+          viewForm.config.dom = secondTab.querySelector("#secondTab");
+          viewForm.config.pages[1].structure[0].group[0][0].disabled = true;
+          viewForm.config.pages[1].structure[0].group[0][1].disabled = true;
+          viewForm.config.pages[1].structure[0].group[1][0].disabled = true;
+          viewForm.config.pages[1].nav = false;
+          nbsf.init(viewForm.config, 1);
+
+          thirdTab.innerHTML = '<div id="thirdTab"></div>';
+          viewForm.config.dom = thirdTab.querySelector("#thirdTab");
+          viewForm.config.pages[2].structure[0].group[0][0].disabled = true;
+          viewForm.config.pages[2].structure[0].group[1][0].disabled = true;
+          viewForm.config.pages[2].structure[0].group[1][1].disabled = true;
+          viewForm.config.pages[2].nav = false;
+          nbsf.init(viewForm.config, 2);
+        }
+      );
+    },
+  };
+
   const grid = {
     config: {
       dom: document.querySelector("#main"),
@@ -327,7 +308,15 @@
           buttonCount: 5,
         },
         groupable: true,
-        toolbar: ["create", "excel"],
+        toolbar: [
+          {
+            name: "addNewRecordBtn",
+            text: "Add new record",
+            iconClass: "k-icon k-i-add",
+            id: "customBtn",
+          },
+          "excel",
+        ],
         excel: {
           fileName: "Kendo UI Grid Export.xlsx",
           proxyURL: "https://demos.telerik.com/kendo-ui/service/export",
@@ -369,7 +358,7 @@
           },
           {
             field: "SelectedDateTime",
-            title: "Datetime",
+            label: "Datetime",
             format: "{0:MM/dd/yyyy hh:mm tt}",
             width: "200px",
           },
@@ -382,7 +371,7 @@
                   const dataItem = this.dataItem(
                     $(e.currentTarget).closest("tr")
                   );
-                  populateFormForEdit(dataItem);
+                  formActions.populateFormForEdit(dataItem);
                 },
               },
               {
@@ -392,7 +381,7 @@
                   const dataItem = this.dataItem(
                     $(e.currentTarget).closest("tr")
                   );
-                  openDeleteConfirmationModal(dataItem.EntryId);
+                  modalHelpers.openDeleteConfirmationModal(dataItem.EntryId);
                 },
               },
               {
@@ -402,7 +391,7 @@
                   const dataItem = this.dataItem(
                     $(e.currentTarget).closest("tr")
                   );
-                  populateFormForView(dataItem); // Call function to populate and open modal
+                  formActions.populateFormForView(dataItem); // Call function to populate and open modal
                 },
               },
             ],
@@ -413,6 +402,13 @@
         editable: "false",
         save: function (e) {
           dataSource.read();
+        },
+        dataBound: function () {
+          $("a.k-grid-addNewRecordBtn").on("click", function (e) {
+            form.config.dataset = {};
+            currentEntryId = null;
+            utils.clickTab("Form");
+          });
         },
       });
     },
@@ -486,7 +482,7 @@
                     options: ["Distributor", "Reseller", "Provider", "Other"],
                     required: true,
                     disabled: false,
-                    change: handleBusinessTypeChange,
+                    change: formActions.handleBusinessTypeChange,
                   },
 
                   {
@@ -510,7 +506,7 @@
               ],
             },
           ],
-          callback: handleBusinessTypeChange,
+          callback: formActions.handleBusinessTypeChange,
         },
         // Page 3: Date & Country Selection
         {
@@ -528,6 +524,7 @@
                     type: "datetime",
                     data: "SelectedDateTime",
                     label: "Datetime",
+                    placeholder: "Select a date",
                     required: true,
                     disabled: false,
                   },
@@ -552,7 +549,7 @@
                     ],
                     required: true,
                     disabled: false,
-                    change: handleCountriesChange,
+                    change: formActions.handleCountriesChange,
                   },
                   {
                     type: "text",
@@ -565,10 +562,10 @@
               ],
             },
           ],
-          callback: handleCountriesChange,
+          callback: formActions.handleCountriesChange,
         },
       ],
-      onSubmit: submitForm,
+      onSubmit: formActions.submitForm,
     },
     init: function () {
       nbsf.init(this.config, this.config.page);
@@ -619,5 +616,6 @@
       });
     },
   };
+
   main.init();
 </script>
