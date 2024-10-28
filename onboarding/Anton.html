@@ -1,0 +1,535 @@
+<script>
+  const pageMap = [2, 3, 4];
+const jobList = ["Kamikaze Trainee", "Runway Sweeper", "Air Cadet", "Flying Tiger", "Squadron Leader"];
+  let formContainer;
+  let currentPage = 0;
+
+  function nextPage(page, product, confirm) {
+      if (page == pageMap[0] - 1) {
+          let next = pageMap[product];
+          if (next !== undefined) return next;
+          return undefined;
+      }
+      if (pageMap.indexOf(page) > -1) return pageMap.slice(-1).pop() + 1;
+      return page + 1;
+  }
+
+  function prevPage(page, product) {
+      if (page == pageMap.slice(1).pop() + 1) {
+          let prev = pageMap[product];
+          if (prev !== undefined) return prev;
+      }
+      if (pageMap.indexOf(page) > -1) return pageMap[0] - 1;
+      return page - 1;
+  }
+  function highlight(result){
+  result.input.custom.fail.forEach(f => nbsf.ui.highlight(f, "Incorrect value"));
+  result.input.fail.forEach(f => nbsf.ui.highlight(f, "Incorrect value"));	  
+}
+  function isValid(){
+  var result = {
+    fail: [],
+    pass: []
+  };
+  if (formContainer && currentPage == 0){
+    let email = formContainer.querySelector('[data-name=Email]');
+    if (email && email.value != '' && !nbsf.vld.isEmail(email.value)) result.fail.push(email);
+
+      let phone = formContainer.querySelector('[data-name=Phone]');
+    if (phone && phone.value != '' && !nbsf.vld.isPhone(phone.value)) result.fail.push(phone);
+  }
+  return result;
+}
+  const cfg = function(nav) {
+      return {
+          pages: [{
+                  title: "",
+                  subtitle: "",
+                  description: "",
+                  nav,
+                  structure: [{
+                      //header: "uno",
+                      description: "",
+                      group: [
+                          [{
+                                  label: "Nombre",
+                                  data: "Name",
+                                  type: "text",
+                                  validation: ["alphanumeric"], //no effect
+                                  required: true
+                              }, {
+                                  label: "Email",
+                                  data: "Email",
+                                  type: "text",
+                                  validation: ["isEmail"], //no effect
+                                  required: true
+                              },
+                              {
+                                  label: "Date",
+                                  data: "Date",
+                                  type: "date",
+                                  validation: ["date"],
+                                  dtp: {
+                                      format: "Y-m-d",
+                                      formatDate: "Y-m-d",
+                                      placeholder: "Select a date",
+                                      timepicker: false,
+                                  },
+                              },
+                              {
+                                  label: "Phone",
+                                  data: "Phone",
+                                  type: "text",
+                                  validation: ["isPhone"]
+                              },
+                              {
+                                  label: "Products",
+                                  type: "select",
+                                  data: "Products",
+                                  values: ["0", "1", "2"],
+                                  options: ["Goods", "Paper", "Stuff"],
+                                  validation: ["alphanumeric"],
+                                  required: true
+                              },
+                          ]
+                      ]
+                  }, ],
+                  validation: isValid
+              },
+              //--------page two--------------------------------
+              {
+                  title: "",
+                  subtitle: "",
+                  description: "",
+                  nav,
+                  structure: [{
+                          //header: "uno",
+                          description: "",
+                          group: [
+                              [{
+                                      label: "Jobs",
+                                      type: "multiselect",
+                                      data: "Jobs",
+                                      values: jobList.map( (_,i) => i.toString()),
+                                      options: jobList,
+                                      validation: ["alphanumeric"],
+                    required: true
+                                  },
+                                  {
+                                      label: "Repeated",
+                                      data: "Repeated",
+                                      type: "hidden",
+                                      validation: ["alphanumeric"]
+                                  }
+                              ]
+                          ]
+                      },
+                      {
+                          //header: "dos",
+                          description: "",
+                          repeatable: "Repeated",
+                          repeatableLimit: 3,
+                          group: [
+                              [{
+                                      label: "First",
+                                      type: "text",
+                                      data: "First",
+                                      validation: ["alphanumeric"],
+                                      required: true
+                                  },
+                                  {
+                                      label: "Second",
+                                      type: "text",
+                                      data: "Second",
+                                      validation: ["alphanumeric"]
+                                  }
+                              ]
+                          ]
+                      }
+                  ],
+              }, //------page three------------------------------
+              {
+                  title: "",
+                  subtitle: "",
+                  description: "",
+                  nav,
+                  structure: [{
+                      //header: "uno",
+                      description: "",
+                      group: [
+                          [{
+                              "label": "The amount of the products for sale?",
+                              "data": "Amount",
+                              "required": true,
+                              "type": "radio",
+                              "values": [
+                                  "0",
+                                  "1",
+                                  "2"
+                              ],
+                              "options": [
+                                  "0%",
+                                  "50%",
+                                  "100%"
+                              ]
+                          }]
+                      ]
+                  }, ],
+              }, //------page four------------------------------
+              {
+                  title: "",
+                  subtitle: "",
+                  description: "",
+                  nav,
+                  structure: [{
+                      //header: "uno",
+                      description: "",
+                      group: [
+                          [{
+                              "label": "Will the papers be sent?",
+                              "data": "Sent",
+                              "type": "toggle",
+                              "values": [
+                                  "N",
+                                  "Y"
+                              ],
+                              "options": [
+                                  "No",
+                                  "Yes"
+                              ]
+                          }]
+                      ]
+                  }, ],
+              }, //------page five------------------------------
+              {
+                  title: "",
+                  subtitle: "",
+                  description: "",
+                  nav,
+                  structure: [{
+                      //header: "uno",
+                      description: "",
+                      group: [
+                          [{
+                              "label": "Estimated dates",
+                              "data": "Estimate",
+                              "required": true,
+                              "type": "date",
+                              "placeholder": "Select a date",
+                              "dtp": {
+                                  "format": "d/m/Y H:i",
+                                  "formatDate": "d/m/Y",
+                                  "onChangeDateTime": "function(dp,$input){}"
+                              }
+                          }]
+                      ]
+                  }, ],
+              },
+              //-----------page six----------------------------------
+              {
+                  title: "",
+                  subtitle: "",
+                  description: "",
+                  nav,
+                  structure: [{
+                      //header: "uno",
+                      description: "",
+                      group: [
+                          [{
+                              "label": "I agree to have my information processed",
+                              "data": "Confirm",
+                              "required": true,
+                              "type": "confirm",
+                              "placeholder": "Input type text with email custom behaviour restriction",
+                              "validation": [
+                                  "isEmail",
+                                  "minLen|6",
+                                  "maxLen|256",
+                                  "noBlanks"
+                              ],
+                              "typing": "kpDefault"
+                          }]
+                      ]
+                  }, ],
+              },
+
+
+          ],
+          onPrev: function(a, b, c) {
+              const page = prevPage(this.page, this.dataset.Products);
+              if (page !== undefined) nbsf.init(this, currentPage = page);
+          },
+
+          onNext: function(a, b, c) {
+            formContainer = document.querySelector("#formtab");
+              let v = nbsf.ev.global(this, true);
+        highlight(v);
+        if (v?.total?.fail !== 0) return;
+
+      const page = nextPage(this.page, this.dataset.Products, this.dataset.Confirm);
+              if (page !== undefined) nbsf.init(this, currentPage = page);
+          },
+          onSubmit: function(a, b, c) {
+            formContainer = document.querySelector("#formtab");
+              let v = nbsf.ev.global(this, true);
+        highlight(v);
+      if (v?.total?.fail !== 0) return;
+
+      crud.create(5265, this.dataset, data => {
+                  document.body.querySelector("span[tab-id]:not(.active)").click();
+                  $("#gridcontent").data("kendoGrid").dataSource.read();
+                  debugger;
+                  Object.keys(b).forEach(k => b[k] = null);
+                  nbsf.init(this, 0);
+              });
+          }
+      };
+  };
+  const app = {
+      init: function(cb) {
+          hpe.ui.tabs({
+              dom: document.body,
+              tabs: [{
+                      label: "Here be grid",
+                      id: "gridTab"
+                  },
+                  {
+                      label: "Here be form",
+                      id: "formTab"
+                  },
+              ]
+          }, function(nodes) {
+              nodes[0].innerHTML = '<div id=gridtab><div id=gridcontent></div><span class="k-pager-input k-label">Per page<input style="width: 3rem" id=gridpage class="k-textbox" value=10></span></div>';
+              nodes[1].innerHTML = '<div id=formtab></div>';
+              const ds = new kendo.data.DataSource({
+                  type: "rfb-v2",
+                  transport: {
+                      read: {
+                          url: "https://hpe-rfb.it.hpe.com/form/data-set-provider/v2/1699/Playground_Anton_M/kendo/data/search",
+                          type: 'POST',
+                          cache: false
+                      },
+                  },
+                  serverPaging: true,
+                  serverFiltering: true,
+                  page: 1,
+                  pageSize: 10,
+                  sort: {
+                      field: "EntryId",
+                      dir: "desc"
+                  },
+                  serverSorting: true,
+                  schema: {
+                      model: {
+                          id: "EntryId",
+                          fields: {
+                              Name: {
+                                  type: "string",
+                              },
+                              Date: {
+                                  //type: "date",
+                  //format: "{0:yyyy/MM/dd}"
+                  type: string,
+                              },
+                              Email: {
+                                  type: "string",
+                              },
+                              Phone: {
+                                  type: "string",
+                              },
+                              Jobs: {
+                                  type: "string",
+                              },
+                              Repeated: {
+                                  type: "string",
+                              },
+                          }
+                      }
+                  }
+              });
+      $('#gridpage').change( ev => {
+        let size = parseInt(ev.target.value, 10);
+          if (!isNaN(size)){
+            ds.pageSize(size);
+        }
+      });
+              $('#gridcontent').kendoGrid({
+                  dataSource: ds,
+                  height: 550,
+                  scrollable: true,
+                  sortable: true,
+                  filterable: true,
+                  pageable: {
+                      input: true,
+                      numeric: false,
+                      refresh: true
+                  },
+                  columns: [{
+                          field: "EntryId",
+                          title: "Id",
+                          width: 100,
+                          locked: true
+                      },
+                      {
+                          field: "Email",
+                          title: "Email",
+                          width: 200,
+                          locked: true
+                      },
+                      {
+                          field: "Name",
+                          title: "Name",
+                          width: 150,
+                      },
+                      {
+                          field: "Phone",
+                          title: "Phone",
+                          width: 180,
+                      },
+                      {
+                          field: "Date",
+                          title: "Date",
+                          //format: "{0:yyyy/MM/dd}", //this lets us display the date the way we want but the grid corrupts the data in the datasource
+                          width: 100,
+                          template: function(row) { //unless we have a template function the grid messes up with the Date field and makes it unusable for the datetimepicker
+                              return row.Date?.substring(0, 10) ?? '';
+                          }
+
+                      },
+                      {
+                          field: "Jobs",
+                          title: "Jobs",
+                          width: 250,
+            template: function(row){
+                if (row.Jobs === undefined || row.Jobs === '') return '';
+                let indexes = row.Jobs.split(',').map(j => parseInt(j, 10));
+              return indexes.map( i => jobList[i] || '').join(', ');
+            }
+                      },
+                      {
+                          field: "Repeated",
+                          title: "Repeated",
+                          width: 300,
+                          template: function(row) { 
+              if (!row.Repeated) return '';
+                return JSON.parse(row.Repeated).map( o => (o.First || '') + (o.Second ? (' / ' + o.Second) : '')).join(', ')
+                          }
+                      },
+                      {
+                          title: "",
+                          width: 80,
+                          command: {
+                              text: 'edit',
+                              template: function(d) {
+                                  return `<a role="button" class="k-button k-button-icontext k-grid-edit" href="#">
+<svg version="1.1" viewBox="0 0 24 24" role="img" aria-label="edit" width="15px" height="15px">
+<path fill="none" stroke="#666" stroke-width="2" d="M14,4 L20,10 L14,4 Z M22.2942268,5.29422684 C22.6840146,5.68401459 22.6812861,6.3187139 22.2864907,6.71350932 L9,20 L2,22 L4,15 L17.2864907,1.71350932 C17.680551,1.319449 18.3127724,1.31277239 18.7057732,1.70577316 L22.2942268,5.29422684 Z M3,19 L5,21 M7,17 L15,9">
+</path>
+</svg>
+</a>`;
+                              },
+                              click: function(e) {
+                                  let config = new cfg(false);
+                                  e.preventDefault();
+
+                  mo.fn.modal.show({
+                                      ctaLabel: "Next page",
+                                      title: "Update record",
+                                      content: `<div id=popupcontent>Loading</div>`,
+                                      contentCallback: function() {
+                                          debugger;
+                                          formContainer = document.querySelector("#popupcontent");
+                                      },
+                                      ctaCallback: function() {
+                                          let v = nbsf.ev.global(config, true);
+                      highlight(v);
+                      if (v?.total?.fail !== 0) return;
+                                          console.log(v);
+                                          let btn = this;
+                                          debugger;
+                                          let next = nextPage(config.page, config.dataset.Products, config.dataset.Confirm);
+                                          let last = config.pages.length - 1;
+                                          btn.textContent = (next == last) ? "Next page" : "Update";
+                                          if (last == config.page) {
+                                              crud.update(5266, config.dataset.EntryId, config.dataset, function(data) {
+                                                  console.log('updated', config.dataset);
+                                                  debugger;
+                                                  mo.fn.modal.hide();
+                                                  $("#gridcontent").data("kendoGrid").dataSource.read();
+                                                  btn.textContent = "Next page";
+                          Object.keys(config.dataset).forEach(k => config.dataset[k] = null);
+                          formContainer = document.querySelector("#formTab");
+                                              });
+                                          } else {
+                                              nbsf.init(config, currentPage = next);
+                                          }
+                                      }
+                                  });
+                                  formContainer = config.dom = document.querySelector("#popupcontent");
+                                  nbsf.init(config, currentPage = 0);
+                                  let data = this.dataItem($(e.currentTarget).closest("tr"));
+                                  for (let k of Object.keys(config.dataset)) config.dataset[k] = data[k];
+
+                  config.dataset.EntryId = data.EntryId;
+                                  nbsf.init(config, currentPage = 0);
+                                  //let v = nbsf.ev.global(config, true);
+                              }
+                          }
+                      },
+                      {
+                          title: "",
+                          width: 80,
+                          command: {
+                              text: 'delete',
+                              template: function(d) {
+                                  return `<a role="button" class="k-button k-button-icontext k-grid-delete" href="#">
+<svg version="1.1" viewBox="0 0 24 24" role="img" aria-label="trash" width="15px" height="15px">
+<path fill="none" stroke="#666" stroke-width="2" d="M4,5 L20,5 L20,23 L4,23 L4,5 Z M1,5 L23,5 M9,1 L15,1 L15,5 L9,5 L9,1 Z M9,1 L15,1 L15,5 L9,5 L9,1 Z M15,9 L15,19 M9,9 L9,19">
+</path>
+</svg>
+</a>`;
+                              },
+                              click: function(e) {
+                                  e.preventDefault();
+                                  let data = this.dataItem($(e.currentTarget).closest("tr"));
+                                  mo.fn.modal.show({
+                                      ctaLabel: "Delete",
+                                      title: "Delete record",
+                                      content: `<div id=popupcontent>Confirm record ${data.EntryId} ${data.Name} deletion?</div>`,
+                                      ctaCallback: function() {
+                                          crud.destroy(5276, data.EntryId, function(data) {
+                                              mo.fn.modal.hide();
+                                              $("#gridcontent").data("kendoGrid").dataSource.read();
+                                          });
+                                      }
+                                  });
+                              }
+                          },
+                      }
+                  ]
+              });
+          });
+          let config = new cfg(true);
+          formContainer = config.dom = document.querySelector("#formtab");
+          nbsf.init(config, currentPage = 0);
+          cb();
+      },
+  };
+</script>
+
+<script>
+  // load dependencies and init applet
+  hpe.supplies.crud();
+  hpe.supplies.mojs();
+  hpe.supplies.nbsf();
+  hpe.supplies.q.end(function() {
+      mo.init();
+      mo.fn.overlay.show({
+          loading: true,
+          close: false
+      });
+      app.init(function() {
+          mo.fn.overlay.hide();
+      });
+  });
+</script>
