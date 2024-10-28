@@ -22,6 +22,16 @@
       if (grid) grid.dataSource.read();
       console.warn(grid);
     },
+    formatDate: (dateString) => {
+      const date = new Date(dateString);
+      const padZero = (value) => String(value).padStart(2, "0");
+
+      return `${date.getFullYear()}-${padZero(date.getMonth() + 1)}-${padZero(
+        date.getDate()
+      )}T${padZero(date.getHours())}:${padZero(date.getMinutes())}:${padZero(
+        date.getSeconds()
+      )}`;
+    },
   };
 
   const crudOperations = {
@@ -50,14 +60,18 @@
 
   const modalHelpers = {
     modalWithCloseBtn: function (title, message) {
+      console.log("tester");
       mo.fn.modal.show({
         title,
         content: message,
         ctaLabel: "Close",
-        ctaCallback: mo.fn.modal.hide,
+        ctaCallback: () => {
+          mo.fn.modal.hide();
+        },
       });
     },
     openDeleteConfirmationModal: function (entryId) {
+      console.log("this is confirm delete modal");
       mo.fn.modal.show({
         title: "Confirm Deletion",
         content: "Are you sure you want to delete the record?",
@@ -148,15 +162,18 @@
       }
     },
     populateFormForEdit: (dataItem) => {
-      Object.keys(dataItem).forEach((key) => {
-        form.config.dataset[key] = dataItem[key];
-      });
+      Object.assign(form.config.dataset, dataItem);
 
+      if (form.config.dataset.SelectedDateTime) {
+        form.config.dataset.SelectedDateTime = utils.formatDate(
+          form.config.dataset.SelectedDateTime
+        );
+      }
       currentEntryId = dataItem.EntryId;
 
       utils.clickTab("Form");
 
-      nbsf.init(form.config, form.config.page);
+      form.init();
     },
     prepareFormData: () => {
       const datasetForSubmit = {
@@ -169,8 +186,8 @@
         UserEmail: form.config.dataset.UserEmail || "",
         UserSelectedOption: form.config.dataset.UserSelectedOption || "No",
       };
-      console.log('this is date and time', datasetForSubmit.SelectedDateTime);
-      
+      console.log("this is date and time", datasetForSubmit.SelectedDateTime);
+
       if (datasetForSubmit.SelectedCountries.includes("Other")) {
         let countriesArray = datasetForSubmit.SelectedCountries.split(",");
         countriesArray = countriesArray.filter(
@@ -187,8 +204,7 @@
           <div id="viewTabs"></div>
         </div>
       `;
-
-      modalHelpers.modalWithCloseBtn("View Details", modalContent);
+      modalHelpers.modalWithCloseBtn("View Details", modalContent, true);
 
       hpe.ui.tabs(
         {
@@ -213,33 +229,19 @@
           const secondTab = all[1];
           const thirdTab = all[2];
 
-          const viewForm = form;
-
-          Object.keys(dataItem).forEach((key) => {
-            viewForm.config.dataset[key] = dataItem[key]; // Populate the dataset
-          });
+          Object.assign(viewForm.config.dataset, dataItem);
 
           firstTab.innerHTML = '<div id="firstTab"></div>';
+
           viewForm.config.dom = firstTab.querySelector("#firstTab");
-          viewForm.config.pages[0].nav = false;
-          viewForm.config.pages[0].structure[0].group[0][0].disabled = true;
-          viewForm.config.pages[0].structure[1].group[0][0].disabled = true;
           nbsf.init(viewForm.config, 0);
 
           secondTab.innerHTML = '<div id="secondTab"></div>';
           viewForm.config.dom = secondTab.querySelector("#secondTab");
-          viewForm.config.pages[1].structure[0].group[0][0].disabled = true;
-          viewForm.config.pages[1].structure[0].group[0][1].disabled = true;
-          viewForm.config.pages[1].structure[0].group[1][0].disabled = true;
-          viewForm.config.pages[1].nav = false;
           nbsf.init(viewForm.config, 1);
 
           thirdTab.innerHTML = '<div id="thirdTab"></div>';
           viewForm.config.dom = thirdTab.querySelector("#thirdTab");
-          viewForm.config.pages[2].structure[0].group[0][0].disabled = true;
-          viewForm.config.pages[2].structure[0].group[1][0].disabled = true;
-          viewForm.config.pages[2].structure[0].group[1][1].disabled = true;
-          viewForm.config.pages[2].nav = false;
           nbsf.init(viewForm.config, 2);
         }
       );
@@ -391,12 +393,12 @@
                   const dataItem = this.dataItem(
                     $(e.currentTarget).closest("tr")
                   );
-                  formActions.populateFormForView(dataItem); // Call function to populate and open modal
+                  formActions.populateFormForView(dataItem);
                 },
               },
             ],
             title: "&nbsp;",
-            width: "150px",
+            width: "300px",
           },
         ],
         editable: "false",
@@ -557,6 +559,164 @@
                     label: "Please specify if Other",
                     validation: ["minLen|1"],
                     disabled: false,
+                  },
+                ],
+              ],
+            },
+          ],
+          callback: formActions.handleCountriesChange,
+        },
+      ],
+      onSubmit: formActions.submitForm,
+    },
+    init: function () {
+      nbsf.init(this.config, this.config.page);
+    },
+  };
+
+  const viewForm = {
+    config: {
+      page: 0,
+      dom: document.querySelector("#main"),
+      dataset: {},
+      pages: [
+        // Page 1: Agreement
+        {
+          title: "Agreement",
+          subtitle: "",
+          description: "",
+          nav: false,
+          structure: [
+            {
+              header: "",
+              description: "",
+              group: [
+                [
+                  {
+                    label: "Agreement Confirmed",
+                    data: "UserAgreementStatus",
+                    required: true,
+                    type: "toggle",
+                    values: ["N", "Y"],
+                    disabled: true,
+                  },
+                ],
+              ],
+            },
+            {
+              header: "",
+              description: "",
+              group: [
+                [
+                  {
+                    label: "Email:",
+                    data: "UserEmail",
+                    type: "email",
+                    placeholder: "Please input email address",
+                    validation: ["isEmail"],
+                    required: true,
+                    disabled: true,
+                  },
+                ],
+              ],
+            },
+          ],
+        },
+        // Page 2: Company Information
+        {
+          title: "Company Information",
+          subtitle: "",
+          description: "",
+          nav: false,
+          structure: [
+            {
+              header: "",
+              description: "",
+              group: [
+                [
+                  {
+                    type: "select",
+                    data: "BusinessType",
+                    label: "Company Business Type",
+                    values: ["Distributor", "Reseller", "Provider", "Other"],
+                    options: ["Distributor", "Reseller", "Provider", "Other"],
+                    required: true,
+                    disabled: true,
+                    change: formActions.handleBusinessTypeChange,
+                  },
+
+                  {
+                    type: "text",
+                    data: "OtherBusinessType",
+                    label: "Please specify if Other",
+                    validation: ["minLen|1"],
+                    disabled: true,
+                  },
+                ],
+                [
+                  {
+                    type: "radio",
+                    data: "UserSelectedOption",
+                    label: "Choose",
+                    values: ["Yes", "No"],
+                    required: true,
+                    disabled: true,
+                  },
+                ],
+              ],
+            },
+          ],
+          callback: formActions.handleBusinessTypeChange,
+        },
+        // Page 3: Date & Country Selection
+        {
+          title: "Select date & country",
+          substitle: "",
+          description: "",
+          nav: false,
+          structure: [
+            {
+              header: "",
+              description: "",
+              group: [
+                [
+                  {
+                    type: "datetime",
+                    data: "SelectedDateTime",
+                    label: "Datetime",
+                    placeholder: "Select a date",
+                    required: true,
+                    disabled: true,
+                  },
+                ],
+                [
+                  {
+                    type: "multiselect",
+                    data: "SelectedCountries",
+                    label: "Select Countries",
+                    values: [
+                      "USA",
+                      "Canada",
+                      "Germany",
+                      "France",
+                      "Japan",
+                      "India",
+                      "China",
+                      "Brazil",
+                      "Australia",
+                      "Mexico",
+                      "Other",
+                    ],
+                    required: true,
+                    disabled: true,
+                    change: formActions.handleCountriesChange,
+                  },
+                  {
+                    type: "text",
+                    data: "OtherCountry",
+                    label: "Please specify if Other",
+                    validation: ["minLen|1"],
+                    disabled: true,
                   },
                 ],
               ],
