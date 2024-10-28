@@ -60,7 +60,6 @@
 
   const modalHelpers = {
     modalWithCloseBtn: function (title, message) {
-      console.log("tester");
       mo.fn.modal.show({
         title,
         content: message,
@@ -71,7 +70,6 @@
       });
     },
     openDeleteConfirmationModal: function (entryId) {
-      console.log("this is confirm delete modal");
       mo.fn.modal.show({
         title: "Confirm Deletion",
         content: "Are you sure you want to delete the record?",
@@ -186,15 +184,14 @@
         UserEmail: form.config.dataset.UserEmail || "",
         UserSelectedOption: form.config.dataset.UserSelectedOption || "No",
       };
-      console.log("this is date and time", datasetForSubmit.SelectedDateTime);
 
-      if (datasetForSubmit.SelectedCountries.includes("Other")) {
-        let countriesArray = datasetForSubmit.SelectedCountries.split(",");
-        countriesArray = countriesArray.filter(
-          (country) => country !== "Other"
-        );
-        datasetForSubmit.SelectedCountries = countriesArray.join(",");
-      }
+      // if (datasetForSubmit.SelectedCountries.includes("Other")) {
+      //   let countriesArray = datasetForSubmit.SelectedCountries.split(",");
+      //   countriesArray = countriesArray.filter(
+      //     (country) => country !== "Other"
+      //   );
+      //   datasetForSubmit.SelectedCountries = countriesArray.join(",");
+      // }
 
       return datasetForSubmit;
     },
@@ -230,6 +227,12 @@
           const thirdTab = all[2];
 
           Object.assign(viewForm.config.dataset, dataItem);
+
+          if (viewForm.config.dataset.SelectedDateTime) {
+            viewForm.config.dataset.SelectedDateTime = utils.formatDate(
+              viewForm.config.dataset.SelectedDateTime
+            );
+          }
 
           firstTab.innerHTML = '<div id="firstTab"></div>';
 
@@ -351,8 +354,11 @@
             title: "Countries",
             template: function (dataItem) {
               let countries = dataItem.SelectedCountries;
-              if (dataItem.OtherCountry) {
-                countries += `, ${dataItem.OtherCountry}`;
+              if (countries.endsWith(",Other") && dataItem.OtherCountry) {
+                countries = countries.replace(
+                  /,Other$/,
+                  `,${dataItem.OtherCountry}`
+                );
               }
               return countries;
             },
@@ -409,6 +415,9 @@
           $("a.k-grid-addNewRecordBtn").on("click", function (e) {
             form.config.dataset = {};
             currentEntryId = null;
+            nbsf.builder.reset(form.config, 0);
+            nbsf.builder.defaults(form.config, 0);
+            form.init();
             utils.clickTab("Form");
           });
         },
