@@ -1,0 +1,417 @@
+<script>
+  const date = new Date();
+
+  const app = {
+    environment: "prod",
+    init: function () {
+      app.tabs.init();
+      app.grid.init();
+      app.chart.init();
+      app.newUser.init();
+    },
+    tabs: {
+      init: function () {
+        hpe.ui.tabs(
+          {
+            dom: document.querySelector(".main"),
+            tabs: [
+              {
+                id: "createUser",
+                label: "Create User",
+              },
+              {
+                id: "users",
+                label: "Users",
+                active: true,
+              },
+              {
+                id: "chart",
+                label: "Chart",
+              },
+            ],
+          },
+          function (nodes) {
+            console.log(nodes);
+            nodes[0].innerHTML = "<div class='new-user'></div>";
+            nodes[1].innerHTML = "<div class='grid'></div>";
+            nodes[2].innerHTML = "<div class='chart'></div>";
+          }
+        );
+      },
+    },
+    grid: {
+      editConfig: null,
+      init: function () {
+        app.grid.datasource = app.grid.source();
+        $(".grid").kendoGrid({
+          dataSource: app.grid.datasource,
+          columns: [
+            {
+              field: "EntryId",
+              title: "Id",
+            },
+            {
+              field: "FirstName",
+              title: "First Name",
+              width: "200px",
+              template: function (row) {
+                return row.FirstName;
+              },
+            },
+            {
+              field: "LastName",
+              title: "Last Name",
+            },
+            {
+              field: "DateOfBirth",
+              title: "Age",
+              template: function (row) {
+                let dob = new Date(row.DateOfBirth);
+
+                return date.getFullYear() - dob.getFullYear();
+              },
+            },
+            {
+              field: "Active",
+              title: "Active",
+              template: function (row) {
+                if (row.Active == "N") {
+                  return "<svg version='1.1' viewBox='0 0 24 24' role='img' aria-label='form-close' width='30px' height='30px'><path fill='none' stroke='#666' stroke-width='2' d='M7,7 L17,17 M7,17 L17,7'></path></svg>";
+                } else
+                  return "<svg version='1.1' viewBox='0 0 24 24' role='img' aria-label='checkmark' width='20px' height='30px'><polyline fill='none' stroke='#666' stroke-width='2' points='2 14 9 20 22 4'></polyline></svg>";
+              },
+            },
+            {
+              field: "Actions",
+              title: "Actions",
+              template: function (row) {
+                let entryId = row.EntryId;
+                return (
+                  "<button id='edit-modal_" +
+                  entryId +
+                  "' class='k-button k-grid-edit'>Edit</button><button id='delete-modal_" +
+                  entryId +
+                  "' class='k-button k-grid-delete'>Delete</button>"
+                );
+              },
+            },
+          ],
+          pageable: {
+            pageSize: 10,
+            pageSizes: [10, 25, 50, 100],
+            refresh: true,
+          },
+          scrollable: true,
+          sortable: true,
+          filterable: true,
+          resizable: true,
+        });
+
+        //edit button event, opening modal
+        $(document).on("click", "[id^='edit-modal']", function (event) {
+          var entryId = event.target.id.split("_")[1];
+          console.log("Edit button clicked for EntryId: " + entryId);
+          mo.fn.modal.show({
+            ctaLabel: "OK",
+            title: "Edit",
+            content: "<div class='edit-modal-content'></div>",
+            contentCallback: function () {
+              crud.read("5120", "eid=" + entryId, function (data) {
+                console.log(data.Rows[0]);
+                app.grid.configEdit = app.nbsf(
+                  document.querySelector(".edit-modal-content"),
+                  data.Rows[0],
+                  "Edit User Form",
+                  false
+                );
+                nbsf.init(app.grid.configEdit, 0);
+              });
+            },
+          });
+        });
+
+        //delete button event, opening modal
+        $(document).on("click", "[id^='delete-modal']", function (event) {
+          var entryId = event.target.id.split("_")[1];
+          console.log("delete button clicked for EntryId: " + entryId);
+          mo.fn.modal.show({
+            ctaLabel: "OK",
+            title: "Delete",
+            content:
+              "<div class='delete-modal-content'>Are you sure you want to delete this user?</div>",
+            ctaCallback: function () {
+              mo.fn.overlay.show({
+                loading: true,
+              });
+              crud.destroy("5120", entryId, function (data) {
+                mo.fn.overlay.hide();
+                console.log(data);
+                mo.fn.events.closeAll();
+                $(".grid").data("kendoGrid").dataSource.read();
+              });
+            },
+          });
+        });
+      },
+      source: function () {
+        let dataSource = new kendo.data.DataSource({
+          type: "rfb-v2",
+          data: [
+            {
+              FirstName: "Sergey",
+              LastName: "Kalinin",
+            },
+            {
+              FirstName: "Sergey",
+              LastName: "Kalinin",
+            },
+          ],
+          schema: {
+            model: {
+              id: "EntryId",
+            },
+          },
+          serverPaging: true,
+          serverFiltering: false,
+          serverSorting: true,
+          pageSize: 10,
+          sort: {
+            field: "EntryId",
+            dir: "asc",
+          },
+          //filter: filter
+        });
+
+        return dataSource;
+        /*dataSource.read().then(function() {
+                var data = dataSource.view();
+                console.log(data);
+              });*/
+      },
+    },
+    chart: {
+      init: function () {
+        app.chart.datasource = app.grid.source; // reusing the data source of your grid
+        $(".chart").kendoChart({
+          title: {
+            text: "Users Activity",
+          },
+          dataSource: {
+            data: [
+              {
+                userActivity: "Active",
+                count: 10,
+              },
+              {
+                userActivity: "Inactive",
+                count: 5,
+              },
+            ],
+          },
+          series: [
+            {
+              type: "column",
+              field: "count",
+              categoryField: "userActivity",
+            },
+          ],
+          categoryAxis: {
+            labels: {
+              rotation: -90,
+            },
+            majorGridLines: {
+              visible: false,
+            },
+          },
+          tooltip: {
+            visible: true,
+            template: "#= category #: #= value #",
+          },
+        });
+      },
+    },
+    newUser: {
+      init: function () {
+        var config = app.nbsf(
+          document.querySelector(".new-user"),
+          null,
+          "Create User Form",
+          true
+        );
+        nbsf.init(config, 0);
+      },
+    },
+    nbsf: function (dom, data, formTitle, navType) {
+      console.log("Config Data:", data);
+      var config = {
+        dom: dom,
+        locale: "en_US",
+        pkey: "EntryId",
+        dataset: data,
+        pages: [
+          {
+            title: formTitle,
+            subtitle: "",
+            description: "",
+            nav: navType,
+            structure: [
+              // BASIC INPUTS
+              {
+                group: [
+                  [
+                    {
+                      label: "First Name",
+                      data: "FirstName",
+                      required: true,
+                      type: "text",
+                      placeholder: "Insert the first name",
+                      validation: [
+                        "alphanumeric",
+                        "minLen|1",
+                        "maxLen|30",
+                        "noBlanks",
+                      ],
+                      typing: "alphanumeric",
+                      attributes: [
+                        {
+                          "test-attribute": "value",
+                        },
+                      ],
+                      onChange: function () {},
+                    },
+                    {
+                      label: "Last Name",
+                      data: "LastName",
+                      required: true,
+                      type: "text",
+                      placeholder: "Insert the first name",
+                      validation: [
+                        "alphanumeric",
+                        "minLen|1",
+                        "maxLen|30",
+                        "noBlanks",
+                      ],
+                      typing: "alphanumeric",
+                      attributes: [
+                        {
+                          "test-attribute": "value",
+                        },
+                      ],
+                      onChange: function () {},
+                    },
+                    {
+                      label: "Date of Birth",
+                      data: "DateOfBirth",
+                      required: true,
+                      type: "date",
+                      placeholder: "Select a date",
+                      dtp: {
+                        format: "d/m/Y",
+                        formatDate: "d/m/Y",
+                        timepicker: false,
+                        onChangeDateTime: function (dp, $input) {},
+                      },
+                    },
+                    {
+                      label: "Active",
+                      data: "Active",
+                      required: true,
+                      type: "toggle",
+                      values: ["N", "Y"],
+                      options: ["No", "Yes"],
+                    },
+                  ],
+                ],
+              },
+              {
+                repeatable: "JobFunctions",
+                repeatableLimit: 2,
+                group: [
+                  [
+                    {
+                      label: "Job Functions",
+                      data: "JobFunctions",
+                      required: false,
+                      type: "text",
+                      placeholder:
+                        "Input type text with alphanumeric restriction",
+                      validation: [
+                        "alphanumeric",
+                        "minLen|1",
+                        "maxLen|30",
+                        "noBlanks",
+                      ],
+                      typing: "alphanumeric",
+                      attributes: [
+                        {
+                          "test-attribute": "value",
+                        },
+                      ],
+                      onChange: function () {},
+                    },
+                  ],
+                ],
+              },
+            ],
+            callback: function () {},
+            validation: function () {
+              var result = {
+                fail: [],
+                pass: [],
+              };
+
+              return result;
+            },
+          },
+        ],
+        onClone: function (donor, clone) {
+          //console.log("Called anytime a clone is generated");
+        },
+        onDeClone: function (donor, clone) {
+          //console.log("Called anytime a clone is deleted");
+        },
+        onNext: function () {
+          console.log("CONFIG:", this);
+          console.log("CURRENT:", this.page);
+          console.log("NEXT:", this.page + 1);
+          console.log("DATA:", this.dataset);
+          nbsf.init(config, config.page + 1);
+        },
+        onPrev: function () {
+          console.log("CONFIG:", this);
+          console.log("CURRENT:", this.page);
+          console.log("PREV:", this.page - 1);
+          console.log("DATA:", this.dataset);
+          nbsf.init(config, config.page - 1);
+        },
+        onSubmit: function () {
+          console.log("CONFIG", this);
+          console.log("DATA", this.dataset);
+          mo.fn.overlay.show({
+            loading: true,
+          });
+          crud.create("5120", this.dataset, function (data) {
+            mo.fn.overlay.hide();
+            $(".grid").data("kendoGrid").dataSource.read();
+            mo.fn.modal.show({
+              ctaLabel: "OK",
+              title: "User Added",
+              content: "<div>User added succesfuly</div>",
+            });
+          });
+        },
+      };
+      return config;
+    },
+  };
+
+  hpe.supplies.mojs();
+  hpe.supplies.crud();
+  hpe.supplies.nbsf();
+  hpe.supplies.q.end(function () {
+    hpe.fn.resizeable();
+    mo.init();
+
+    app.init();
+  });
+</script>
