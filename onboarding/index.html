@@ -111,26 +111,23 @@
         utils.toggleVisibility(otherElement, false);
       }
     },
-    handleCountriesChange: () => {
+    handleCountriesChange: (data) => {
       const otherCountryField = document.querySelector(
         'input[data-name="OtherCountry"]'
       );
+
       const otherCountryElement = otherCountryField.parentElement.parentElement;
 
-      if (
-        form.config.dataset.SelectedCountries &&
-        form.config.dataset.SelectedCountries.includes("Other")
-      ) {
+      if (data.SelectedCountries && data.SelectedCountries.includes("Other")) {
         utils.toggleVisibility(otherCountryElement, true);
       } else {
         utils.toggleVisibility(otherCountryElement, false);
       }
     },
-    submitForm: async () => {
+    submitForm: async (dataset) => {
       try {
-        const datasetForSubmit = formActions.prepareFormData();
+        const datasetForSubmit = formActions.prepareFormData(dataset);
         mo.fn.overlay.show({ loading: true });
-
         const response =
           currentEntryId === null
             ? await crudOperations.createEntry(datasetForSubmit)
@@ -138,13 +135,11 @@
                 currentEntryId,
                 datasetForSubmit
               );
-
         mo.fn.overlay.hide();
         modalHelpers.modalWithCloseBtn(
           "Success",
           "Your form has been successfully submitted!"
         );
-
         // if (currentEntryId !== null) {
         utils.clickTab("Grid");
         currentEntryId = null;
@@ -160,48 +155,46 @@
       }
     },
     populateFormForEdit: (dataItem) => {
-      Object.assign(form.config.dataset, dataItem);
-
-      if (form.config.dataset.SelectedDateTime) {
-        form.config.dataset.SelectedDateTime = utils.formatDate(
-          form.config.dataset.SelectedDateTime
-        );
+      if (dataItem.SelectedDateTime) {
+        dataItem.SelectedDateTime = utils.formatDate(dataItem.SelectedDateTime);
       }
+
+      if (dataItem.JobFunctions) {
+        try {
+          dataItem.JobFunctions = JSON.parse(dataItem.JobFunctions);
+        } catch (e) {
+          dataItem.JobFunctions = [];
+        }
+      }
+
       currentEntryId = dataItem.EntryId;
 
       utils.clickTab("Form");
 
-      form.init();
+      app.newRecord.init(dataItem);
     },
-    prepareFormData: () => {
+    prepareFormData: (dataItem) => {
       const datasetForSubmit = {
-        BusinessType: form.config.dataset.BusinessType || "",
-        OtherBusinessType: form.config.dataset.OtherBusinessType || "",
-        OtherCountry: form.config.dataset.OtherCountry || "",
-        SelectedCountries: form.config.dataset.SelectedCountries || "",
-        SelectedDateTime: form.config.dataset.SelectedDateTime || "",
-        UserAgreementStatus: form.config.dataset.UserAgreementStatus || "N",
-        UserEmail: form.config.dataset.UserEmail || "",
-        UserSelectedOption: form.config.dataset.UserSelectedOption || "No",
+        BusinessType: dataItem.BusinessType || "",
+        OtherBusinessType: dataItem.OtherBusinessType || "",
+        OtherCountry: dataItem.OtherCountry || "",
+        SelectedCountries: dataItem.SelectedCountries || "",
+        SelectedDateTime: dataItem.SelectedDateTime || "",
+        UserAgreementStatus: dataItem.UserAgreementStatus || "N",
+        UserEmail: dataItem.UserEmail || "",
+        UserSelectedOption: dataItem.UserSelectedOption || "No",
+        JobFunctions: JSON.stringify(dataItem.JobFunctions || []),
       };
-
-      // if (datasetForSubmit.SelectedCountries.includes("Other")) {
-      //   let countriesArray = datasetForSubmit.SelectedCountries.split(",");
-      //   countriesArray = countriesArray.filter(
-      //     (country) => country !== "Other"
-      //   );
-      //   datasetForSubmit.SelectedCountries = countriesArray.join(",");
-      // }
 
       return datasetForSubmit;
     },
     populateFormForView: (dataItem) => {
       const modalContent = `
-        <div>
-          <div id="viewTabs"></div>
-        </div>
-      `;
-      modalHelpers.modalWithCloseBtn("View Details", modalContent, true);
+          <div>
+            <div id="viewTabs"></div>
+          </div>
+        `;
+      modalHelpers.modalWithCloseBtn("View Details", modalContent);
 
       hpe.ui.tabs(
         {
@@ -226,360 +219,27 @@
           const secondTab = all[1];
           const thirdTab = all[2];
 
-          Object.assign(viewForm.config.dataset, dataItem);
+          firstTab.innerHTML = '<div id="firstTab"></div>';
+          secondTab.innerHTML = '<div id="secondTab"></div>';
+          thirdTab.innerHTML = '<div id="thirdTab"></div>';
 
-          if (viewForm.config.dataset.SelectedDateTime) {
-            viewForm.config.dataset.SelectedDateTime = utils.formatDate(
-              viewForm.config.dataset.SelectedDateTime
+          if (dataItem.SelectedDateTime) {
+            dataItem.SelectedDateTime = utils.formatDate(
+              dataItem.SelectedDateTime
             );
           }
 
-          firstTab.innerHTML = '<div id="firstTab"></div>';
+          if (dataItem.JobFunctions) {
+            try {
+              dataItem.JobFunctions = JSON.parse(dataItem.JobFunctions);
+            } catch (e) {
+              dataItem.JobFunctions = [];
+            }
+          }
 
-          viewForm.config.dom = firstTab.querySelector("#firstTab");
-          nbsf.init(viewForm.config, 0);
-
-          secondTab.innerHTML = '<div id="secondTab"></div>';
-          viewForm.config.dom = secondTab.querySelector("#secondTab");
-          nbsf.init(viewForm.config, 1);
-
-          thirdTab.innerHTML = '<div id="thirdTab"></div>';
-          viewForm.config.dom = thirdTab.querySelector("#thirdTab");
-          nbsf.init(viewForm.config, 2);
+          app.viewRecord.init(dataItem);
         }
       );
-    },
-  };
-
-  const grid = {
-    config: {
-      dom: document.querySelector("#main"),
-      dataSource: new kendo.data.DataSource({
-        type: "rfb-v2",
-        transport: {
-          read: {
-            url: "/form/data-set-provider/v2/1884/Robert_Test/kendo/data/search",
-            type: "POST",
-          },
-          create: {
-            url: "/form/data-set-provider/v2/1884/Robert_Test/kendo/data",
-            dataType: "json",
-            type: "POST",
-          },
-          update: {
-            url: "/form/data-set-provider/v2/1884/Robert_Test/kendo/data",
-            dataType: "json",
-            type: "PUT",
-          },
-          destroy: {
-            url: "/form/data-set-provider/v2/1884/Robert_Test/kendo/data",
-            dataType: "json",
-            type: "DELETE",
-          },
-        },
-        schema: {
-          model: {
-            id: "EntryId",
-            fields: {
-              EntryId: { type: "number", editable: false },
-              Created: { type: "date", editable: false },
-              BusinessType: { type: "string" },
-              OtherBusinessType: { type: "string" },
-              SelectedCountries: { type: "string" },
-              OtherCountry: { type: "string" },
-              SelectedDateTime: { type: "date" },
-            },
-          },
-        },
-        serverPaging: true,
-        pageSize: 15,
-        serverFiltering: true,
-        serverSorting: true,
-        size: "small",
-        sort: { field: "EntryId", dir: "desc" },
-      }),
-    },
-    init: function () {
-      $(this.config.dom).kendoGrid({
-        dataSource: this.config.dataSource,
-        filterable: true,
-        sortable: true,
-        editable: "incell",
-        resizable: true,
-        reorderable: true,
-        pageable: {
-          refresh: true,
-          pageSizes: true,
-          buttonCount: 5,
-        },
-        groupable: true,
-        toolbar: [
-          {
-            name: "addNewRecordBtn",
-            text: "Add new record",
-            iconClass: "k-icon k-i-add",
-            id: "customBtn",
-          },
-          "excel",
-        ],
-        excel: {
-          fileName: "Kendo UI Grid Export.xlsx",
-          proxyURL: "https://demos.telerik.com/kendo-ui/service/export",
-          filterable: true,
-        },
-        columns: [
-          { field: "EntryId", title: "EntryId", locked: true, width: "100px" },
-          {
-            field: "Created",
-            title: "Created Date",
-            format: "{0:MM/dd/yyyy}",
-            locked: true,
-            filterable: {
-              ui: "datepicker",
-            },
-            width: "150px",
-          },
-          {
-            field: "BusinessType",
-            title: "Company Business Type",
-            template: function (dataItem) {
-              return dataItem.BusinessType === "Other"
-                ? `Other: ${dataItem.OtherBusinessType}`
-                : dataItem.BusinessType;
-            },
-            width: "200px",
-          },
-          {
-            field: "SelectedCountries",
-            title: "Countries",
-            template: function (dataItem) {
-              let countries = dataItem.SelectedCountries;
-              if (countries.endsWith(",Other") && dataItem.OtherCountry) {
-                countries = countries.replace(
-                  /,Other$/,
-                  `,${dataItem.OtherCountry}`
-                );
-              }
-              return countries;
-            },
-            width: "250px",
-          },
-          {
-            field: "SelectedDateTime",
-            label: "Datetime",
-            format: "{0:MM/dd/yyyy hh:mm tt}",
-            width: "200px",
-          },
-          {
-            command: [
-              {
-                name: "editButton",
-                text: "Edit",
-                click: function (e) {
-                  const dataItem = this.dataItem(
-                    $(e.currentTarget).closest("tr")
-                  );
-                  formActions.populateFormForEdit(dataItem);
-                },
-              },
-              {
-                name: "deleteButton",
-                text: "Delete",
-                click: function (e) {
-                  const dataItem = this.dataItem(
-                    $(e.currentTarget).closest("tr")
-                  );
-                  modalHelpers.openDeleteConfirmationModal(dataItem.EntryId);
-                },
-              },
-              {
-                name: "view",
-                text: "View",
-                click: function (e) {
-                  const dataItem = this.dataItem(
-                    $(e.currentTarget).closest("tr")
-                  );
-                  formActions.populateFormForView(dataItem);
-                },
-              },
-            ],
-            title: "&nbsp;",
-            width: "300px",
-          },
-        ],
-        editable: "false",
-        save: function (e) {
-          dataSource.read();
-        },
-        dataBound: function () {
-          $("a.k-grid-addNewRecordBtn").on("click", function (e) {
-            form.config.dataset = {};
-            currentEntryId = null;
-            nbsf.builder.reset(form.config, 0);
-            nbsf.builder.defaults(form.config, 0);
-            form.init();
-            utils.clickTab("Form");
-          });
-        },
-      });
-    },
-  };
-
-  const form = {
-    config: {
-      page: 0,
-      dom: document.querySelector("#main"),
-      dataset: {},
-      pages: [
-        // Page 1: Agreement
-        {
-          title: "Agreement",
-          subtitle: "",
-          description: "",
-          nav: true,
-          structure: [
-            {
-              header: "",
-              description: "",
-              group: [
-                [
-                  {
-                    label: "Agreement Confirmed",
-                    data: "UserAgreementStatus",
-                    required: true,
-                    type: "toggle",
-                    values: ["N", "Y"],
-                    disabled: false,
-                  },
-                ],
-              ],
-            },
-            {
-              header: "",
-              description: "",
-              group: [
-                [
-                  {
-                    label: "Email:",
-                    data: "UserEmail",
-                    type: "email",
-                    placeholder: "Please input email address",
-                    validation: ["isEmail"],
-                    required: true,
-                    disabled: false,
-                  },
-                ],
-              ],
-            },
-          ],
-        },
-        // Page 2: Company Information
-        {
-          title: "Company Information",
-          subtitle: "",
-          description: "",
-          nav: true,
-          structure: [
-            {
-              header: "",
-              description: "",
-              group: [
-                [
-                  {
-                    type: "select",
-                    data: "BusinessType",
-                    label: "Company Business Type",
-                    values: ["Distributor", "Reseller", "Provider", "Other"],
-                    options: ["Distributor", "Reseller", "Provider", "Other"],
-                    required: true,
-                    disabled: false,
-                    change: formActions.handleBusinessTypeChange,
-                  },
-
-                  {
-                    type: "text",
-                    data: "OtherBusinessType",
-                    label: "Please specify if Other",
-                    validation: ["minLen|1"],
-                    disabled: false,
-                  },
-                ],
-                [
-                  {
-                    type: "radio",
-                    data: "UserSelectedOption",
-                    label: "Choose",
-                    values: ["Yes", "No"],
-                    required: true,
-                    disabled: false,
-                  },
-                ],
-              ],
-            },
-          ],
-          callback: formActions.handleBusinessTypeChange,
-        },
-        // Page 3: Date & Country Selection
-        {
-          title: "Select date & country",
-          substitle: "",
-          description: "",
-          nav: true,
-          structure: [
-            {
-              header: "",
-              description: "",
-              group: [
-                [
-                  {
-                    type: "datetime",
-                    data: "SelectedDateTime",
-                    label: "Datetime",
-                    placeholder: "Select a date",
-                    required: true,
-                    disabled: false,
-                  },
-                ],
-                [
-                  {
-                    type: "multiselect",
-                    data: "SelectedCountries",
-                    label: "Select Countries",
-                    values: [
-                      "USA",
-                      "Canada",
-                      "Germany",
-                      "France",
-                      "Japan",
-                      "India",
-                      "China",
-                      "Brazil",
-                      "Australia",
-                      "Mexico",
-                      "Other",
-                    ],
-                    required: true,
-                    disabled: false,
-                    change: formActions.handleCountriesChange,
-                  },
-                  {
-                    type: "text",
-                    data: "OtherCountry",
-                    label: "Please specify if Other",
-                    validation: ["minLen|1"],
-                    disabled: false,
-                  },
-                ],
-              ],
-            },
-          ],
-          callback: formActions.handleCountriesChange,
-        },
-      ],
-      onSubmit: formActions.submitForm,
-    },
-    init: function () {
-      nbsf.init(this.config, this.config.page);
     },
   };
 
@@ -651,7 +311,7 @@
                     options: ["Distributor", "Reseller", "Provider", "Other"],
                     required: true,
                     disabled: true,
-                    change: formActions.handleBusinessTypeChange,
+                    // change: formActions.handleBusinessTypeChange,
                   },
 
                   {
@@ -675,7 +335,7 @@
               ],
             },
           ],
-          callback: formActions.handleBusinessTypeChange,
+          // callback: formActions.handleBusinessTypeChange,
         },
         // Page 3: Date & Country Selection
         {
@@ -718,7 +378,7 @@
                     ],
                     required: true,
                     disabled: true,
-                    change: formActions.handleCountriesChange,
+                    // change: formActions.handleCountriesChange,
                   },
                   {
                     type: "text",
@@ -731,7 +391,7 @@
               ],
             },
           ],
-          callback: formActions.handleCountriesChange,
+          // callback: formActions.handleCountriesChange,
         },
       ],
       onSubmit: formActions.submitForm,
@@ -741,50 +401,509 @@
     },
   };
 
-  const formContainer = {
+  const app = {
     config: {},
     init: function () {
-      hpe.ui.tabs(
-        {
-          dom: document.querySelector("#main"),
-          tabs: [
+      app.tabs.init();
+      app.grid.init();
+      app.newRecord.init();
+    },
+    tabs: {
+      init: function () {
+        hpe.ui.tabs(
+          {
+            dom: document.querySelector("#main"),
+            tabs: [
+              {
+                label: "Grid",
+                id: "Grid",
+              },
+              {
+                label: "Form",
+                id: "Form",
+              },
+            ],
+          },
+          function (all) {
+            const gridTab = all[0];
+            const formTab = all[1];
+
+            formTab.innerHTML = '<div id="formTab"></div>';
+            gridTab.innerHTML = '<div id="gridTab"></div>';
+          }
+        );
+      },
+    },
+    grid: {
+      dataSource: new kendo.data.DataSource({
+        type: "rfb-v2",
+        transport: {
+          read: {
+            url: "/form/data-set-provider/v2/1884/Robert_Test/kendo/data/search",
+            type: "POST",
+          },
+          create: {
+            url: "/form/data-set-provider/v2/1884/Robert_Test/kendo/data",
+            dataType: "json",
+            type: "POST",
+          },
+          update: {
+            url: "/form/data-set-provider/v2/1884/Robert_Test/kendo/data",
+            dataType: "json",
+            type: "PUT",
+          },
+          destroy: {
+            url: "/form/data-set-provider/v2/1884/Robert_Test/kendo/data",
+            dataType: "json",
+            type: "DELETE",
+          },
+        },
+        schema: {
+          model: {
+            id: "EntryId",
+            fields: {
+              EntryId: { type: "number", editable: false },
+              Created: { type: "date", editable: false },
+              BusinessType: { type: "string" },
+              OtherBusinessType: { type: "string" },
+              SelectedCountries: { type: "string" },
+              OtherCountry: { type: "string" },
+              SelectedDateTime: { type: "date" },
+            },
+          },
+        },
+        serverPaging: true,
+        pageSize: 15,
+        serverFiltering: true,
+        serverSorting: true,
+        size: "small",
+        sort: { field: "EntryId", dir: "desc" },
+      }),
+      init: function () {
+        $("#gridTab").kendoGrid({
+          dataSource: this.dataSource,
+          filterable: true,
+          sortable: true,
+          editable: "incell",
+          resizable: true,
+          reorderable: true,
+          pageable: {
+            refresh: true,
+            pageSizes: true,
+            buttonCount: 5,
+          },
+          groupable: true,
+          toolbar: [
             {
-              label: "Grid",
-              id: "Grid",
+              name: "addNewRecordBtn",
+              text: "Add new record",
+              iconClass: "k-icon k-i-add",
+            },
+            "excel",
+          ],
+          excel: {
+            fileName: "Kendo UI Grid Export.xlsx",
+            proxyURL: "https://demos.telerik.com/kendo-ui/service/export",
+            filterable: true,
+          },
+          columns: [
+            {
+              field: "EntryId",
+              title: "EntryId",
+              locked: true,
+              width: "100px",
             },
             {
-              label: "Form",
-              id: "Form",
+              field: "Created",
+              title: "Created Date",
+              format: "{0:MM/dd/yyyy}",
+              locked: true,
+              filterable: {
+                ui: "datepicker",
+              },
+              width: "150px",
+            },
+            {
+              field: "BusinessType",
+              title: "Company Business Type",
+              template: function (dataItem) {
+                return dataItem.BusinessType === "Other"
+                  ? `Other: ${dataItem.OtherBusinessType}`
+                  : dataItem.BusinessType;
+              },
+              width: "200px",
+            },
+            {
+              field: "SelectedCountries",
+              title: "Countries",
+              template: function (dataItem) {
+                let countries = dataItem.SelectedCountries;
+                if (countries.endsWith(",Other") && dataItem.OtherCountry) {
+                  countries = countries.replace(
+                    /,Other$/,
+                    `,${dataItem.OtherCountry}`
+                  );
+                }
+                return countries;
+              },
+              width: "250px",
+            },
+            {
+              field: "SelectedDateTime",
+              label: "Datetime",
+              format: "{0:MM/dd/yyyy hh:mm tt}",
+              width: "200px",
+            },
+            {
+              field: "JobFunctions",
+              title: "Job Functions",
+              // template: function (dataItem) {
+              //   console.log("this is dataItem", dataItem);
+              //   try {
+              //     const jobFunctions = JSON.parse(
+              //       dataItem.JobFunctions || "[]"
+              //     );
+              //     console.log('ths is job funtiosn in function',jobFunctions);
+              //     return jobFunctions
+              //       .map((job) => {
+              //         const jobFunction = job.JobFunction || "";
+              //         const jobPosition = job.JobPosition || ""; // Handle null position
+              //         return jobPosition
+              //           ? `${jobFunction}: ${jobPosition}`
+              //           : jobFunction;
+              //       })
+              //       .filter((text) => text) // Remove any empty strings
+              //       .join(", ");
+              //   } catch (e) {
+              //     console.error("Error parsing JobFunctions:", e);
+              //     return "";
+              //   }
+              // },
+              template: function (dataItem) {
+                try {
+                  let jobFunctionsString = dataItem.JobFunctions;
+                  console.log(jobFunctionsString);
+
+                  if (typeof jobFunctionsString === "string") {
+                    // Replace all escaped quotes with regular quotes
+                    jobFunctionsString = jobFunctionsString.replace(
+                      /\\"/g,
+                      '"'
+                    );
+                    // Remove extra quotes at start and end if they exist
+                    jobFunctionsString = jobFunctionsString.replace(
+                      /^"|"$/g,
+                      ""
+                    );
+                  }
+                  console.log(jobFunctionsString);
+
+                  // Parse the string into an object
+                  const jobFunctions = JSON.parse(jobFunctionsString || "[]");
+                  console.log(jobFunctions);
+
+                  return jobFunctions
+                    .map((job) => {
+                      const jobFunction = job.JobFunction || "";
+                      const jobPosition = job.JobPosition || "";
+                      return jobPosition
+                        ? `${jobFunction}: ${jobPosition}`
+                        : jobFunction;
+                    })
+                    .filter((text) => text)
+                    .join(", ");
+                } catch (e) {
+                  console.error("Error parsing JobFunctions:", e);
+                  return "";
+                }
+              },
+              width: "250px",
+            },
+            {
+              command: [
+                {
+                  name: "editButton",
+                  text: "Edit",
+                  click: function (e) {
+                    const dataItem = this.dataItem(
+                      $(e.currentTarget).closest("tr")
+                    );
+                    formActions.populateFormForEdit(dataItem);
+                  },
+                },
+                {
+                  name: "deleteButton",
+                  text: "Delete",
+                  click: function (e) {
+                    const dataItem = this.dataItem(
+                      $(e.currentTarget).closest("tr")
+                    );
+                    modalHelpers.openDeleteConfirmationModal(dataItem.EntryId);
+                  },
+                },
+                {
+                  name: "view",
+                  text: "View",
+                  click: function (e) {
+                    const dataItem = this.dataItem(
+                      $(e.currentTarget).closest("tr")
+                    );
+                    formActions.populateFormForView(dataItem);
+                  },
+                },
+              ],
+              title: "&nbsp;",
+              width: "300px",
             },
           ],
+          editable: "false",
+          save: function (e) {
+            dataSource.read();
+          },
+          dataBound: function () {
+            $("a.k-grid-addNewRecordBtn").on("click", function (e) {
+              currentEntryId = null;
+              app.newRecord.init();
+              utils.clickTab("Form");
+            });
+          },
+        });
+      },
+    },
+    newRecord: {
+      init: function (dataset = {}) {
+        let config = app.nbsf(
+          document.querySelector("#formTab"),
+          dataset,
+          true,
+          false
+        );
+        nbsf.init(config, 0);
+      },
+    },
+    viewRecord: {
+      init: function (dataset) {
+        let firstConfig = app.nbsf(
+          document.querySelector("#firstTab"),
+          dataset,
+          false,
+          true
+        );
+        nbsf.init(firstConfig, 0);
+        let secondConfig = app.nbsf(
+          document.querySelector("#secondTab"),
+          dataset,
+          false,
+          true
+        );
+        nbsf.init(secondConfig, 1);
+        let thirdConfig = app.nbsf(
+          document.querySelector("#thirdTab"),
+          dataset,
+          false,
+          true
+        );
+        nbsf.init(thirdConfig, 2);
+      },
+    },
+    nbsf: function (dom, data, navType, disabledStatus) {
+      let config = {
+        page: 0,
+        dom: dom,
+        dataset: data,
+        pages: [
+          // Page 1: Agreement
+          {
+            title: "Agreement",
+            subtitle: "",
+            description: "",
+            nav: navType,
+            structure: [
+              {
+                header: "",
+                description: "",
+                group: [
+                  [
+                    {
+                      label: "Agreement Confirmed",
+                      data: "UserAgreementStatus",
+                      required: true,
+                      type: "toggle",
+                      values: ["N", "Y"],
+                      disabled: disabledStatus,
+                    },
+                  ],
+                ],
+              },
+              {
+                header: "",
+                description: "",
+                group: [
+                  [
+                    {
+                      label: "Email:",
+                      data: "UserEmail",
+                      type: "email",
+                      placeholder: "Please input email address",
+                      validation: ["isEmail"],
+                      required: true,
+                      disabled: disabledStatus,
+                    },
+                  ],
+                ],
+              },
+              {
+                header: "Job Information",
+                description: "Enter job functions and positions",
+                repeatable: "JobFunctions",
+                repeatableLimit: 5,
+                repeatableDirection: "down",
+                group: [
+                  [
+                    {
+                      type: "text",
+                      data: "JobFunction",
+                      label: "Job Function",
+                      validation: ["minLen|1", "maxLen|10"],
+                      required: true,
+                      disabled: disabledStatus,
+                    },
+                    {
+                      type: "text",
+                      data: "JobPosition",
+                      label: "Job Position",
+                      validation: ["minLen|1"],
+                      disabled: disabledStatus,
+                    },
+                  ],
+                ],
+              },
+            ],
+          },
+          // Page 2: Company Information
+          {
+            title: "Company Information",
+            subtitle: "",
+            description: "",
+            nav: navType,
+            structure: [
+              {
+                header: "",
+                description: "",
+                group: [
+                  [
+                    {
+                      type: "select",
+                      data: "BusinessType",
+                      label: "Company Business Type",
+                      values: ["Distributor", "Reseller", "Provider", "Other"],
+                      options: ["Distributor", "Reseller", "Provider", "Other"],
+                      required: true,
+                      disabled: disabledStatus,
+                      change: formActions.handleBusinessTypeChange,
+                    },
+
+                    {
+                      type: "text",
+                      data: "OtherBusinessType",
+                      label: "Please specify if Other",
+                      validation: ["minLen|1"],
+                      disabled: disabledStatus,
+                    },
+                  ],
+                  [
+                    {
+                      type: "radio",
+                      data: "UserSelectedOption",
+                      label: "Choose",
+                      values: ["Yes", "No"],
+                      required: true,
+                      disabled: disabledStatus,
+                    },
+                  ],
+                ],
+              },
+            ],
+            callback: formActions.handleBusinessTypeChange,
+          },
+          // Page 3: Date & Country Selection
+          {
+            title: "Select date & country",
+            substitle: "",
+            description: "",
+            nav: navType,
+            structure: [
+              {
+                header: "",
+                description: "",
+                group: [
+                  [
+                    {
+                      type: "datetime",
+                      data: "SelectedDateTime",
+                      label: "Datetime",
+                      placeholder: "Select a date",
+                      required: true,
+                      disabled: disabledStatus,
+                    },
+                  ],
+                  [
+                    {
+                      type: "multiselect",
+                      data: "SelectedCountries",
+                      label: "Select Countries",
+                      values: [
+                        "USA",
+                        "Canada",
+                        "Germany",
+                        "France",
+                        "Japan",
+                        "India",
+                        "China",
+                        "Brazil",
+                        "Australia",
+                        "Mexico",
+                        "Other",
+                      ],
+                      required: true,
+                      disabled: disabledStatus,
+                      change: function () {
+                        formActions.handleCountriesChange(config.dataset);
+                      },
+                    },
+                    {
+                      type: "text",
+                      data: "OtherCountry",
+                      label: "Please specify if Other",
+                      validation: ["minLen|1"],
+                      disabled: disabledStatus,
+                    },
+                  ],
+                ],
+              },
+            ],
+            callback: function () {
+              formActions.handleCountriesChange(config.dataset);
+            },
+          },
+        ],
+        onSubmit: function () {
+          formActions.submitForm(config.dataset);
         },
-        function (all) {
-          const gridTab = all[0];
-          const formTab = all[1];
-
-          formTab.innerHTML = '<div id="formTab"></div>';
-          form.config.dom = formTab.querySelector("#formTab");
-          form.init();
-
-          gridTab.innerHTML = '<div id="gridTab"></div>';
-          grid.config.dom = gridTab.querySelector("#gridTab");
-          grid.init();
-        }
-      );
+      };
+      return config;
     },
   };
+</script>
 
-  const main = {
-    init: function () {
-      hpe.supplies.crud();
-      hpe.supplies.mojs();
-      hpe.supplies.nbsf();
-      hpe.supplies.q.end(function () {
-        mo.init();
-        formContainer.init();
-      });
-    },
-  };
+<script>
+  hpe.supplies.crud();
+  hpe.supplies.mojs();
+  hpe.supplies.nbsf();
+  hpe.supplies.q.end(function () {
+    hpe.fn.resizeable();
+    mo.init();
 
-  main.init();
+    app.init();
+  });
 </script>
