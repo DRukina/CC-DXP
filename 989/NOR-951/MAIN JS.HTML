@@ -19659,7 +19659,8 @@
             "<tr><td" +
             labelWidth +
             " style='font-weight:bold;padding:4px;'>" +
-            PDF.l10n(itemDescr.label) +
+            PDF.l10n(itemDescr.labelKey || itemDescr.label) +
+            ":</td>" +
             "</td>" +
             "<td" +
             valueWidth +
@@ -19689,7 +19690,7 @@
 
     structure: [
       {
-        header: "Purchase Order Information",
+        header: "PurchaseOrderInfo", // Purchase Order Information
         items: [
           { label: "Form005", key: "PO_Number" }, // Purchase order number
           {
@@ -19705,7 +19706,7 @@
         ],
       },
       {
-        header: "Submitter Information", // Submitter
+        header: "SubmitterInfo", // Submitter Information
         items: [
           { label: "Partner name", key: "PartnerName" }, // Company
           { label: "FirstName", key: "FirstName" }, // First Name
@@ -19715,7 +19716,7 @@
         ],
       },
       {
-        header: "Quote details", // Form075
+        header: "Form075", // Quote details
         items: [
           { label: "Form019", key: "Requestor_PO_Quote_ID" }, // Quote number
           { label: "Form021", key: "Requestor_PO_Deal_ID" }, // Deal number
@@ -19725,7 +19726,7 @@
         ],
       },
       {
-        header: "Delivery Information", // Form472
+        header: "Form472", // Delivery Information
         items: [
           { label: "Form039", key: "PO_DeliveryDate" }, // Requested Delivery date
           { label: "Form476", key: "PO_DeliveryIncoterms" }, // Delivery Incoterms
@@ -19738,7 +19739,7 @@
         ],
       },
       {
-        header: "Sold to Information", // Form054
+        header: "Form054", // Sold to Information
         items: [
           { label: "Form086", key: "SoldTo_PartyId" }, // Party ID
           { label: "Form058", key: "SoldTo_CompanyName" }, // Company name
@@ -19757,7 +19758,7 @@
         ],
       },
       {
-        header: "Payer Information", // Form068
+        header: "Form068", // Payer Information
         items: [
           { label: "Form086", key: "Payer_PartyId" }, // Party ID
           { label: "Form058", key: "Payer_CompanyName" }, // Company name
@@ -19776,7 +19777,7 @@
         ],
       },
       {
-        header: "Bill to Information", // Form101
+        header: "Form101", // Bill to Information
         items: [
           { label: "Form086", key: "BillTo_PartyId" }, // Party ID
           { label: "Form058", key: "BillTo_CompanyName" }, // Company name
@@ -19795,7 +19796,7 @@
         ],
       },
       {
-        header: "Shipping Information", // Form045
+        header: "Form045", // Shipping Information
         items: [
           { label: "Form086", key: "ShipTo_PartyId" }, // Party ID
           { label: "Form058", key: "ShipTo_CompanyName" }, // Company name
@@ -19814,7 +19815,7 @@
         ],
       },
       {
-        header: "End customer Information", // Form138
+        header: "Form138", // End customer Information
         items: [
           { label: "Form086", key: "EndCx_PartyId" }, // Party ID
           { label: "Form058", key: "EndCx_CompanyName" }, // Company name
@@ -19833,35 +19834,35 @@
         ],
       },
       {
-        header: "Reseller Information", // Form126
+        header: "Form126", // Reseller Information
         items: [
-          { label: "Party ID:", key: "Reseller_PartyId" },
-          { label: "Company name:", key: "Reseller_CompanyName" },
-          { label: "Address 1:", key: "Reseller_Address_Street" },
-          { label: "Address 2:", key: "Reseller_Address_Street2" },
-          { label: "ZIP / Postal Code:", key: "Reseller_Address_Postal" },
-          { label: "City:", key: "Reseller_Address_City" },
-          { label: "State / Province:", key: "Reseller_Address_State" },
-          { label: "Country:", key: "Reseller_Address_Country" },
-          { label: "Tax ID:", key: "Reseller_NationalId" },
-          { label: "First Name:", key: "Reseller_Contact_FirstName" },
-          { label: "Last Name:", key: "Reseller_Contact_LastName" },
-          { label: "Phone:", key: "Reseller_Contact_Phone" },
-          { label: "Email:", key: "Reseller_Contact_Email" },
-          { label: "Country of residence:", key: "Reseller_Contact_Country" },
+          { label: "Form086", key: "Reseller_PartyId" }, // Party ID
+          { label: "Form058", key: "Reseller_CompanyName" }, // Company name
+          { label: "Address", key: "Reseller_Address_Street" }, // Address 1
+          { label: "AddressLineOptional", key: "Reseller_Address_Street2" }, // Address 2
+          { label: "Postal code", key: "Reseller_Address_Postal" }, // ZIP / Postal Code
+          { label: "City", key: "Reseller_Address_City" }, // City
+          { label: "StateProvince", key: "Reseller_Address_State" }, // State / Province
+          { label: "Country", key: "Reseller_Address_Country" }, // Country
+          { label: "Form495", key: "Reseller_NationalId" }, // Tax ID
+          { label: "FirstName", key: "Reseller_Contact_FirstName" }, // First Name
+          { label: "Surname", key: "Reseller_Contact_LastName" }, // Last Name
+          { label: "Telephone", key: "Reseller_Contact_Phone" }, // Phone
+          { label: "Email", key: "Reseller_Contact_Email" }, // Email
+          { label: "CountryOfResidence", key: "Reseller_Contact_Country" }, // Country of residence
         ],
       },
       {
-        header: "Custom Ship To Party Information", // Form486
+        header: "Form486", //  Custom Ship To Party Information
         items: [
-          { label: "Party ID:", key: "CustomShipTo_PartyId" },
-          { label: "Company name:", key: "CustomShipTo_CompanyName" },
-          { label: "Address 1:", key: "CustomShipTo_Address" },
-          { label: "Address 2:", key: "CustomShipTo_Address_Street2" },
-          { label: "ZIP / Postal Code:", key: "CustomShipTo_Address_Postal" },
-          { label: "City:", key: "CustomShipTo_Address_City" },
-          { label: "State / Province:", key: "CustomShipTo_Address_State" },
-          { label: "Country:", key: "CustomShipTo_Address_Country" },
+          { label: "Form086", key: "CustomShipTo_PartyId" }, // Party ID
+          { label: "Form058", key: "CustomShipTo_CompanyName" }, // Company name
+          { label: "Address", key: "CustomShipTo_Address" }, // Address 1
+          { label: "AddressLineOptional", key: "CustomShipTo_Address_Street2" }, // Address 2
+          { label: "Postal code", key: "CustomShipTo_Address_Postal" }, // ZIP / Postal Code
+          { label: "City", key: "CustomShipTo_Address_City" }, // City
+          { label: "StateProvince", key: "CustomShipTo_Address_State" }, // State / Province
+          { label: "Country", key: "CustomShipTo_Address_Country" }, // Country
         ],
       },
       {
@@ -20014,50 +20015,50 @@
         },
       },
       {
-        header: "Asset location Information", // Form519
+        header: "Form519", // Asset location Information
         items: [
-          { label: "Party ID:", key: "AssLoc_PartyId" },
-          { label: "Company name:", key: "AssLoc_CompanyName" },
-          { label: "Address 1:", key: "AssLoc_Address_Street" },
-          { label: "Address 2:", key: "AssLoc_Address_Street2" },
-          { label: "ZIP / Postal Code:", key: "AssLoc_Address_Postal" },
-          { label: "City:", key: "AssLoc_Address_City" },
-          { label: "State / Province:", key: "AssLoc_Address_State" },
-          { label: "Country:", key: "AssLoc_Address_Country" },
+          { label: "Form086", key: "AssLoc_PartyId" }, // Party ID
+          { label: "Form058", key: "AssLoc_CompanyName" }, // Company name
+          { label: "Address", key: "AssLoc_Address_Street" }, // Address 1
+          { label: "AddressLineOptional", key: "AssLoc_Address_Street2" }, // Address 2
+          { label: "Postal code", key: "AssLoc_Address_Postal" }, // ZIP / Postal Code
+          { label: "City", key: "AssLoc_Address_City" }, // City
+          { label: "StateProvince", key: "AssLoc_Address_State" }, // State / Province
+          { label: "Country", key: "AssLoc_Address_Country" }, // Country
         ],
       },
       {
-        header: "Preferred Service Provider Information", // Form529
+        header: "Form529", // Preferred Service Provider Information
         items: [
-          { label: "Party ID:", key: "PSP_PartyId" },
-          { label: "Company name:", key: "PSP_CompanyName" },
-          { label: "Address 1:", key: "PSP_Address_Street" },
-          { label: "Address 2:", key: "PSP_Address_Street2" },
-          { label: "ZIP / Postal Code:", key: "PSP_Address_Postal" },
-          { label: "City:", key: "PSP_Address_City" },
-          { label: "State / Province:", key: "PSP_Address_State" },
-          { label: "Country:", key: "PSP_Address_Country" },
+          { label: "Form086", key: "PSP_PartyId" }, // Party ID
+          { label: "Form058", key: "PSP_CompanyName" }, // Company name
+          { label: "Address", key: "PSP_Address_Street" }, // Address 1
+          { label: "AddressLineOptional", key: "PSP_Address_Street2" }, // Address 2
+          { label: "Postal code", key: "PSP_Address_Postal" }, // ZIP / Postal Code
+          { label: "City", key: "PSP_Address_City" }, // City
+          { label: "StateProvince", key: "PSP_Address_State" }, // State / Province
+          { label: "Country", key: "PSP_Address_Country" }, // Country
         ],
       },
       {
-        header: "Entitled party Information", // Form520
+        header: "Form520", // Entitled party Information
         items: [
-          { label: "Party ID:", key: "EntPrty_PartyId" },
-          { label: "Company name:", key: "EntPrty_CompanyName" },
-          { label: "Address 1:", key: "EntPrty_Address_Street" },
-          { label: "Address 2:", key: "EntPrty_Address_Street2" },
-          { label: "ZIP / Postal Code:", key: "EntPrty_Address_Postal" },
-          { label: "City:", key: "EntPrty_Address_City" },
-          { label: "State / Province:", key: "EntPrty_Address_State" },
-          { label: "Country:", key: "EntPrty_Address_Country" },
-          { label: "First Name:", key: "EntPrty_Contact_FirstName" },
-          { label: "Last Name:", key: "EntPrty_Contact_LastName" },
-          { label: "Phone:", key: "EntPrty_Contact_Phone" },
-          { label: "Email:", key: "EntPrty_Contact_Email" },
+          { label: "Form086", key: "EntPrty_PartyId" }, // Party ID
+          { label: "Form058", key: "EntPrty_CompanyName" }, // Company name
+          { label: "Address", key: "EntPrty_Address_Street" }, // Address 1
+          { label: "AddressLineOptional", key: "EntPrty_Address_Street2" }, // Address 2
+          { label: "Postal code", key: "EntPrty_Address_Postal" }, // ZIP / Postal Code
+          { label: "City", key: "EntPrty_Address_City" }, // City
+          { label: "StateProvince", key: "EntPrty_Address_State" }, // State / Province
+          { label: "Country", key: "EntPrty_Address_Country" }, // Country
+          { label: "FirstName", key: "EntPrty_Contact_FirstName" }, // First Name
+          { label: "Surname", key: "EntPrty_Contact_LastName" }, // Last Name
+          { label: "Telephone", key: "EntPrty_Contact_Phone" }, // Phone
+          { label: "Email", key: "EntPrty_Contact_Email" }, // Email
         ],
       },
       {
-        header: "Comments", // Form186
+        header: "Form186", // Comments
         items: [
           {
             label: "Tax details (and any exemptions)",
@@ -20087,80 +20088,75 @@
         ],
       },
       {
-        header: "Additional information", // Form152
+        header: "Form152", // Additional information
         items: [
-          { label: "Select file", key: "Optional_Attachment" },
+          { label: "FormCFI06", key: "Optional_Attachment" }, // Select file
           {
-            label:
-              "Are you ordering support / Installation services or Software licenses?",
+            label: "Form156", // Are you ordering support / Installation services or Software licenses?
             key: "Config_PI",
             renderer: pdfYesNoRenderer,
           },
           {
-            label:
-              "Do you have a system manager contact apart from the provided end customer contact?",
-            key: "Config_SystemManager",
+            label: "Form157",
+            key: "Config_SystemManager", // Do you have a system manager contact apart from the provided end customer contact?
             renderer: pdfYesNoRenderer,
           },
-          { label: "First name", key: "EndCx_SysMng_FirstName" },
-          { label: "Last name", key: "EndCx_SysMng_LastName" },
-          { label: "Phone", key: "EndCx_SysMng_Phone" },
-          { label: "Email", key: "EndCx_SysMng_Email" },
-          { label: "Country of residence", key: "EndCx_SysMng_Country" },
-          { label: "Reservation ID", key: "Config_ResId" },
-          { label: "Label order ID (LOID)", key: "Config_LOID" },
+          { label: "FirstName", key: "EndCx_SysMng_FirstName" }, // First name
+          { label: "LastName", key: "EndCx_SysMng_LastName" }, // Last name
+          { label: "Telephone", key: "EndCx_SysMng_Phone" }, // Phone
+          { label: "Email", key: "EndCx_SysMng_Email" }, // Email
+          { label: "CountryOfResidence", key: "EndCx_SysMng_Country" }, // Country of residence
+          { label: "Form163", key: "Config_ResId" }, // Reservation ID
+          { label: "Form165", key: "Config_LOID" }, // Label order ID (LOID)
           {
-            label: "Non-chargeable special logistics services",
+            label: "Form454", // Non-chargeable special logistics services
             key: "Config_LogCode",
           },
           {
-            label: "Do you belong to Public sector entity?",
+            label: "Form481", // Do you belong to Public sector entity?
             key: "Config_PublicSectionPartner",
             renderer: pdfYesNoRenderer,
           },
           { label: "CIG", key: "Config_CIG" },
           { label: "CUP", key: "Config_CUP" },
           {
-            label:
-              "Is the asset location address the same as the end customer address?",
+            label: "Form052", // Is the asset location address the same as the end customer address?
             key: "Config_LocationDetails",
             renderer: pdfYesNoRenderer,
           },
           {
-            label:
-              "Is the entitled party information the same as the end customer information?",
+            label: "Form053", // Is the entitled party information the same as the end customer information?
             key: "Config_EntitledDetails",
             renderer: pdfYesNoRenderer,
           },
           {
-            label: "Do you have a Preferred Service Provider (PSP)",
+            label: "Form528", // Do you have a Preferred Service Provider (PSP)
             key: "Config_PSP",
             renderer: pdfYesNoRenderer,
           },
           {
-            label: "Do you have an acknowledgement Letter information?",
+            label: "Form240", // Do you have an acknowledgement Letter information?
             key: "Config_ALI",
             renderer: pdfYesNoRenderer,
           },
           {
-            label:
-              "Are you ordering a combined order with other departments (PointNext/CMS/Parts Sales)?",
+            label: "Form242", // Are you ordering a combined order with other departments (PointNext/CMS/Parts Sales)?
             key: "Config_CombinedOrder",
             renderer: pdfYesNoRenderer,
           },
           {
-            label: "Which team is in charge of other product",
+            label: "Form244", // Which team is in charge of other product
             key: "CombinedOrder_Team",
           },
           {
-            label: "The total value of other product",
+            label: "Form245", // The total value of other product
             key: "CombinedOrder_Total",
           },
           {
-            label: "Combined Share point ID",
+            label: "Form246", // Combined Share point ID
             key: "CombinedOrder_SharePointID",
           },
-          { label: "The owner of combined order", key: "CombinedOrder_Owner" },
+          { label: "Form247", key: "CombinedOrder_Owner" }, // The owner of combined order
         ],
         newline: true,
         row: true,
@@ -20183,14 +20179,12 @@
     },
 
     createPdf: function () {
-			console.log('this is pdf structure', PDF.structure);
       let cells = PDF.structure
         .map((item) => {
           const cellfunc = item.renderer || PDF.defaultCellRenderer;
           return cellfunc(item);
         })
         .filter((cell) => !!cell);
-			console.log('this is cells', cells);
       let tableCells = cells
         .reduce(
           (acc, cell, ndx, arr) => {
@@ -20215,7 +20209,6 @@
           if (row.length == 1 && row[0].row) {
             return "<br>" + row[0].content;
           }
-					console.log('this is row', row);
           return (
             "<table style='width:100%;'>" +
             "<tr><td style='vertical-align: top;padding-top:10px;' width='50%'>" +
@@ -20226,29 +20219,37 @@
             "</td></tr></table>"
           );
         });
-      console.log("config.locale", config.locale);
-      console.log(
-        "form005",
-        hpe.fn.lang("Form005", config.locale, config.localizations)
-      );
-      console.log("object", PDF.l10n("Form005"));
-      // config.dataset.PdfContent = "<h1 style='margin-top:10px;'>" + hpe.fn.lang("Form005", config.locale, config.localizations) + " - <span>[PO_Number]</span></h1>" +  // Form005 = 'Purchase order number'
-      // config.dataset.PdfContent = "<h1 style='margin-top:10px;'>Purchase Order - <span>[PO_Number]</span></h1>" +  // Form005 = 'Purchase order number'
       config.dataset.PdfContent =
         "<h1 style='margin-top:10px;'>" +
         PDF.l10n("Form005") +
         " - <span>[PO_Number]</span></h1>" + // Form005 = 'Purchase order number'
-        "<div style='font-weight:bold;'>THIS IS A COPY OF YOUR ELECTRONIC PURCHASE ORDER SUBMITTED WITH HPE</div>" +
+        "<div style='font-weight:bold;'>" +
+        PDF.l10n('HPEPurchaseOrderConfirm') +
+        "</div>" +
         tableCells.join("\n") +
-        "<br><p style='font-size:7pt'><i>The information provided above will be used for order creation and invoicing purpose.<br>Hewlett Packard Enterprise Confidential</i></p><br>" +
+        "<br><p style='font-size:7pt'><i>" +
+        PDF.l10n('FooterInvoiceInfo') +
+        "<br>" +
+        PDF.l10n('FooterHPE') +
+        "</i></p><br>" +
         "<table style='width: 100%;'><tr>" +
         "<td style='width:30%;vertical-align:bottom;'>" +
         "    <img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFYAAAAZCAYAAACrWNlOAAAABlBMVEUAAAABqYLY1jZUAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAb0lEQVRoge3ZsQ3CQBAAQQ7Ro7txQDeu8mnAodcINBNedFpd8NLPHO/14HLPby/wr4SNCBsRNvI6G65tn7sX+WVnDwAXGxE2ImxE2IiwEWEjwkaEjQgbETYibETYiLARYSPjz6vhYiPCRoSNCBv5ACJhCIlJVOXyAAAAAElFTkSuQmCC'></td>" +
         "<td style='width:70%;border-top:3px solid black;font-size:7pt;'>" +
-        "    <p>This is HPE Confidential and Proprietary Information. Do not share.</p>" +
-        "    <p>Hewlett Packard Enterprise uses automatic data collection tools to personalize your experience. For more information regarding Hewlett Packard Enterprise's privacy policies and practices, please visit our" +
-        "	    <a href='https://www.hpe.com/us/en/legal/privacy.html'>Privacy Statement</a> or <a href='https://www.hpe.com/us/en/about/legal/terms-of-use.html'>Terms of Use.</a> </p>" +
-        "    <p>©Copyright 2024 Hewlett Packard Enterprise Development LP. The information contained herein is subject to change without notice.</p>" +
+        "    <p>" +
+        PDF.l10n('FooterConfidentialNotice') +
+        "</p>" +
+        "    <p>" +
+        PDF.l10n('FooterPrivacyPolicyText') +
+        "	    <a href='https://www.hpe.com/us/en/legal/privacy.html'>" +
+        PDF.l10n('FooterPrivacyStatement') +
+        "</a> " +
+        PDF.l10n('FooterOr') +
+        " <a href='https://www.hpe.com/us/en/about/legal/terms-of-use.html'>" +
+        PDF.l10n('FooterTermsOfUse') +
+        ".</a> </p>" +
+        "    <p>" +
+        PDF.l10n('FooterPrivacyPolicyText') +
         "</td></tr></table>";
     },
   };
