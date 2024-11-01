@@ -7973,18 +7973,28 @@
           $(heading).append(
             `<a style="display: block" href='https://hpe-rfb.it.hpe.com/builder/rs/forms/989/images/HPE%20NOR%20Template%20for%20Products%20and%20Services%20V4.xlsx'>Download the template</a>`
           );
-          $(heading).append(
-            `<div class="k-button kUpload-reset" aria-label="Reset file" style="margin-top: 16px;"><span>${hpe.fn.lang(
+
+
+          $(".k-dropzone").css({
+            width: "100%",
+            display: "flex",
+            justifyContent: "space-between",
+          });
+
+          $(".k-dropzone").append(
+            `<div class="k-button kUpload-reset" aria-label="Reset file" style="margin: 8px 0 15px 8px;"><span>${hpe.fn.lang(
               "ResetSelectedFile",
               config.locale,
               config.localizations
             )}</span></div>`
           );
 
-          $(".kUpload-reset").click(function () {
+          $(".kUpload-reset").click(function (event) {
             if (config.dataset.ProductServices_Attachment) {
               clearPSAttachment();
             }
+            event.preventDefault();
+            event.stopPropagation();
           });
         }
       }
