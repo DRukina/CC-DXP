@@ -19623,7 +19623,7 @@
   const PDF = {
     l10nDebug: false, // set to TRUE to get template with localization keys. Development only.
     l10n: function (l10nKey) {
-      if (PDF.l10nDebug) return "[" + l10nKey + "]";
+      if (PDF.l10nDebug) return "[key:" + l10nKey + "]";
       return (
         hpe.fn.lang(l10nKey, config.locale, config.localizations) || l10nKey
       );
@@ -20224,32 +20224,32 @@
         PDF.l10n("Form005") +
         " - <span>[PO_Number]</span></h1>" + // Form005 = 'Purchase order number'
         "<div style='font-weight:bold;'>" +
-        PDF.l10n('HPEPurchaseOrderConfirm') +
+        PDF.l10n('PdfHPEPurchaseOrderConfirm') +
         "</div>" +
         tableCells.join("\n") +
         "<br><p style='font-size:7pt'><i>" +
-        PDF.l10n('FooterInvoiceInfo') +
+        PDF.l10n('PdfFooterInvoiceInfo') +
         "<br>" +
-        PDF.l10n('FooterHPE') +
+        PDF.l10n('PdfFooterHPE') +
         "</i></p><br>" +
         "<table style='width: 100%;'><tr>" +
         "<td style='width:30%;vertical-align:bottom;'>" +
         "    <img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFYAAAAZCAYAAACrWNlOAAAABlBMVEUAAAABqYLY1jZUAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAb0lEQVRoge3ZsQ3CQBAAQQ7Ro7txQDeu8mnAodcINBNedFpd8NLPHO/14HLPby/wr4SNCBsRNvI6G65tn7sX+WVnDwAXGxE2ImxE2IiwEWEjwkaEjQgbETYibETYiLARYSPjz6vhYiPCRoSNCBv5ACJhCIlJVOXyAAAAAElFTkSuQmCC'></td>" +
         "<td style='width:70%;border-top:3px solid black;font-size:7pt;'>" +
         "    <p>" +
-        PDF.l10n('FooterConfidentialNotice') +
+        PDF.l10n('PdfFooterConfidentialNotice') +
         "</p>" +
         "    <p>" +
-        PDF.l10n('FooterPrivacyPolicyText') +
+        PDF.l10n('PdfFooterPrivacyPolicyText') +
         "	    <a href='https://www.hpe.com/us/en/legal/privacy.html'>" +
-        PDF.l10n('FooterPrivacyStatement') +
+        PDF.l10n('PdfFooterPrivacyStatement') +
         "</a> " +
-        PDF.l10n('FooterOr') +
+        PDF.l10n('PdfFooterOr') +
         " <a href='https://www.hpe.com/us/en/about/legal/terms-of-use.html'>" +
-        PDF.l10n('FooterTermsOfUse') +
+        PDF.l10n('PdfFooterTermsOfUse') +
         ".</a> </p>" +
         "    <p>" +
-        PDF.l10n('FooterCopyright') +
+        PDF.l10n('PdfFooterCopyright') +
         "</td></tr></table>";
     },
   };
