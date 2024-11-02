@@ -19615,8 +19615,8 @@
   };
 
   const pdfYesNoRenderer = function (val) {
-    if (val == "Y") return "Yes";
-    if (val == "N") return "No";
+    if (val == "Y") return PDF.l10n("YesLabel");
+    if (val == "N") return PDF.l10n("No");
     return val || "";
   };
 
@@ -19708,7 +19708,7 @@
       {
         header: "SubmitterInfo", // Submitter Information
         items: [
-          { label: "Partner name", key: "PartnerName" }, // Company
+          { label: "Form533_Option2", key: "PartnerName" }, // Company
           { label: "FirstName", key: "FirstName" }, // First Name
           { label: "LastName", key: "LastName" }, // Last Name
           { label: "Email", key: "Email" }, // Email
@@ -20117,8 +20117,8 @@
             key: "Config_PublicSectionPartner",
             renderer: pdfYesNoRenderer,
           },
-          { label: "CIG", key: "Config_CIG" },
-          { label: "CUP", key: "Config_CUP" },
+          { label: "Form482", key: "Config_CIG" }, // CIG
+          { label: "Form484", key: "Config_CUP" }, // CUP
           {
             label: "Form052", // Is the asset location address the same as the end customer address?
             key: "Config_LocationDetails",
