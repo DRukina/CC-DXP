@@ -716,8 +716,8 @@
             });
           else if (typeof callback === "function") {
             /*applet._putUserData(applet.user.EntryId,{UserVisits:applet.user.UserVisits,LastLogin:applet.user.LastLogin},function() {
-                          console.log("User account updated successfully");
-                        });*/
+                                      console.log("User account updated successfully");
+                                    });*/
             callback();
           }
         } else if (
@@ -790,8 +790,8 @@
             });
           else if (typeof callback === "function") {
             /*applet._putUserData(applet.user.EntryId,{UserVisits:applet.user.UserVisits,LastLogin:applet.user.LastLogin},function() {
-                          console.log("User account updated successfully");
-                        });*/
+                                      console.log("User account updated successfully");
+                                    });*/
             callback();
           }
         }
@@ -869,9 +869,9 @@
         }
         // TO DO SALES REP
         /*if (cur.SRP.EMEA || cur.SRP.APJ || cur.SRP.AMS) {
-                            document.querySelector("div.tile[section-id=invitations]").classList.remove("inactive");
-                            document.querySelector("nav ul li[section-id=invitations]").classList.remove("inactive");
-                        }*/
+                                    document.querySelector("div.tile[section-id=invitations]").classList.remove("inactive");
+                                    document.querySelector("nav ul li[section-id=invitations]").classList.remove("inactive");
+                                }*/
         // CURRENCY ADMIN
         if (cur.CNT) {
           document
@@ -1337,14 +1337,14 @@
           break;
 
         /*	case "inProgress":
-                      inProgress._init();
-                      break;
-                    case "completed":
-                      completed._init();
-                      break; 
-                    case "cancelled":
-                      cancelled._init();
-                      break;*/
+                                  inProgress._init();
+                                  break;
+                                case "completed":
+                                  completed._init();
+                                  break; 
+                                case "cancelled":
+                                  cancelled._init();
+                                  break;*/
         case "partnerPreferences":
           partnerPreferences.init();
           break;
@@ -1805,13 +1805,13 @@
             width: 115,
           },
           /*{
-                    field: "PO_Value",
-                    title: "Value",
-                    filterable: false,
-                    template: function(d) {
-                        return d.PO_Value + " " + d.PO_Currency;
-                    }
-                },*/
+                              field: "PO_Value",
+                              title: "Value",
+                              filterable: false,
+                              template: function(d) {
+                                  return d.PO_Value + " " + d.PO_Currency;
+                              }
+                          },*/
           {
             field: "SubmittedTimestamp",
             title: "Date",
@@ -2406,26 +2406,26 @@
             width: 115,
           },
           /*{
-                             field: "PO_Value",
-                             title: "Value",
-                             filterable: false,
-                             template: function(d) {
-                                 return d.PO_Value + " " + d.PO_Currency;
-                             }
-                         },*/
+                                       field: "PO_Value",
+                                       title: "Value",
+                                       filterable: false,
+                                       template: function(d) {
+                                           return d.PO_Value + " " + d.PO_Currency;
+                                       }
+                                   },*/
           {
             field: "PrebuildsSubmitted_Date",
             title: "Date",
             filterable: false,
             width: 150,
             /*,
-                                     template: function(d) {
-                                     try {
-                                       return d.SubmittedTimestamp.split("T")[0];
-                                     } catch (err) {
-                                       return d.SubmittedTimestamp;
-                                     }
-                                     }*/
+                                                 template: function(d) {
+                                                 try {
+                                                   return d.SubmittedTimestamp.split("T")[0];
+                                                 } catch (err) {
+                                                   return d.SubmittedTimestamp;
+                                                 }
+                                                 }*/
           },
           {
             field: "SubmitterEmail",
@@ -2648,16 +2648,16 @@
           },
         });
         /*
-              $(selector).delegate(".view", "click", function(e) {
-                var grid = $(selector).data("kendoGrid");
-                var row = grid.dataItem($(this).closest("tr"));
-                reviewPrebuilds._init(row.EntryId);
-              });
-              $(selector).delegate(".sfdc", "click", function(e) {
-                var grid = $(selector).data("kendoGrid");
-                var row = grid.dataItem($(this).closest("tr"));
-                sfdc.init(row.EntryId);
-              });*/
+                      $(selector).delegate(".view", "click", function(e) {
+                        var grid = $(selector).data("kendoGrid");
+                        var row = grid.dataItem($(this).closest("tr"));
+                        reviewPrebuilds._init(row.EntryId);
+                      });
+                      $(selector).delegate(".sfdc", "click", function(e) {
+                        var grid = $(selector).data("kendoGrid");
+                        var row = grid.dataItem($(this).closest("tr"));
+                        sfdc.init(row.EntryId);
+                      });*/
         $(selector + " .k-grid-toolbar").appendTo(
           selector.split(" .grid")[0] + " .toolbar"
         );
@@ -2913,21 +2913,21 @@
             ],
             callback: function () {
               /*$('input[data-name="Email"]').on("change", function() {
-                          crud.read('6551', 'Email=' + $(this).val(), function(d) {
-                              if (d.Total > 0) {
-                                  $('input[data-name="Email"]').val('');
-                                  alert("Email already exists");
-                              }
-                          })
-                      });
-                       $('input[data-name="Backup_Email"]').on("change", function() {
-                           crud.read('6551', 'Backup_Email=' + $(this).val(), function(d) {
-                             if (d.Total > 0) {
-                               $('input[data-name="Backup_Email"]').val('');
-                               alert("Backup Email already exists");
-                             }
-                           })
-                         });  */
+                                    crud.read('6551', 'Email=' + $(this).val(), function(d) {
+                                        if (d.Total > 0) {
+                                            $('input[data-name="Email"]').val('');
+                                            alert("Email already exists");
+                                        }
+                                    })
+                                });
+                                 $('input[data-name="Backup_Email"]').on("change", function() {
+                                     crud.read('6551', 'Backup_Email=' + $(this).val(), function(d) {
+                                       if (d.Total > 0) {
+                                         $('input[data-name="Backup_Email"]').val('');
+                                         alert("Backup Email already exists");
+                                       }
+                                     })
+                                   });  */
               let fields = $(
                 'select[data-name="Level"], select[data-name="Country"], input[data-name="Email"], input[data-name="Backup_Email"]'
               );
@@ -3077,27 +3077,27 @@
                 });
               }
               /*crud.read("6273", "ApprovalId_L1=" + eid, function(d) {
-                            if(d.Rows.length == 0) {
-                            crud.read("6273", "ApprovalId_L2=" + eid, function(d) {
-                              if(d.Rows.length == 0) {
-                              crud.read("6273", "ApprovalId_L3=" + eid, function(d) {
-                                if(d.Rows.length != 0) {
-                                d.forEach(
-                                  crud.update('6549', eid, {L3_Email: email, L3_Email_Backup }, function(d) {
-                                  });
-                                )
-                                }
-                              }) 							
-                              }  else if( d.Rows.length != 0) {
-                              crud.update('6549', eid, {L2_Email: email, L2_Email_Backup }, function(d) {
-                              });
-                              }
-                            })
-                            }  else if( d.Rows.length != 0) {
-                            crud.update('6549', eid, {L1_Email: email, L1_Email_Backup }, function(d) {
-                            });
-                            }
-                          })*/
+                                          if(d.Rows.length == 0) {
+                                          crud.read("6273", "ApprovalId_L2=" + eid, function(d) {
+                                            if(d.Rows.length == 0) {
+                                            crud.read("6273", "ApprovalId_L3=" + eid, function(d) {
+                                              if(d.Rows.length != 0) {
+                                              d.forEach(
+                                                crud.update('6549', eid, {L3_Email: email, L3_Email_Backup }, function(d) {
+                                                });
+                                              )
+                                              }
+                                            }) 							
+                                            }  else if( d.Rows.length != 0) {
+                                            crud.update('6549', eid, {L2_Email: email, L2_Email_Backup }, function(d) {
+                                            });
+                                            }
+                                          })
+                                          }  else if( d.Rows.length != 0) {
+                                          crud.update('6549', eid, {L1_Email: email, L1_Email_Backup }, function(d) {
+                                          });
+                                          }
+                                        })*/
               mo.fn.overlay.hide();
               prebuilds._refreshUsers();
               $('[tab-id="mngPrebuilds"]').click();
@@ -4255,18 +4255,18 @@
             if (config[i].data[j].col == "Requestor_PO_Opp_ID" && val == "OPE-")
               val = "N/A";
             /*if(config[i].data[j].col == "Contact_PreferredLanguage" && val == "N/A") val = "en_US";
-                          else if(config[i].data[j].col == "Contract_ScannedCopy" && val != "N/A") val = '<a href="https://hpe-rfb.it.hpe.com/form/681/attachments/'+review.data.app.EntryId+'/Contract_ScannedCopy?name='+val+'" target="_blank">'+val+'</a>';
-                          switch(config[i].data[j].col) {
-                            case "Company_URL":
-                            val = '<a href="'+val+'" target="_blank">'+val+'</a>';
-                            break;
-                            case "Company_LegalDocs":
-                            val = '<a href="https://hpe-rfb.it.hpe.com/form/681/attachments/'+review.data.app.EntryId+'/Company_LegalDocs?name='+val+'" target="_blank">'+val+'</a>';
-                            break;
-                            case "Business_GMFirstName":
-                            val = review.data.app.Business_GMSalutation + " " + review.data.app.Business_GMFirstName + " " + review.data.app.Business_GMLastName;
-                            break;
-                        }*/
+                                      else if(config[i].data[j].col == "Contract_ScannedCopy" && val != "N/A") val = '<a href="https://hpe-rfb.it.hpe.com/form/681/attachments/'+review.data.app.EntryId+'/Contract_ScannedCopy?name='+val+'" target="_blank">'+val+'</a>';
+                                      switch(config[i].data[j].col) {
+                                        case "Company_URL":
+                                        val = '<a href="'+val+'" target="_blank">'+val+'</a>';
+                                        break;
+                                        case "Company_LegalDocs":
+                                        val = '<a href="https://hpe-rfb.it.hpe.com/form/681/attachments/'+review.data.app.EntryId+'/Company_LegalDocs?name='+val+'" target="_blank">'+val+'</a>';
+                                        break;
+                                        case "Business_GMFirstName":
+                                        val = review.data.app.Business_GMSalutation + " " + review.data.app.Business_GMFirstName + " " + review.data.app.Business_GMLastName;
+                                        break;
+                                    }*/
             //console.log("Column: "+ config[i].data[j].col);
             if (
               [
@@ -4728,14 +4728,14 @@
             };
             //console.log(history);
             /*for(i=0;i<history.length;i++) {
-                          console.log("thefor");
-                          if(new Date(history[i].Created).getTime() > new Date(review.data.SubmittedTimestamp).getTime()) {
-                            if(i==0) history.unshift(submission);
-                            else history.splice(i, 0, submission);
-                              break;
-                          }
-                            else if(i == history.length-1) history.push(submission);
-                        }*/
+                                      console.log("thefor");
+                                      if(new Date(history[i].Created).getTime() > new Date(review.data.SubmittedTimestamp).getTime()) {
+                                        if(i==0) history.unshift(submission);
+                                        else history.splice(i, 0, submission);
+                                          break;
+                                      }
+                                        else if(i == history.length-1) history.push(submission);
+                                    }*/
           }
         } catch (err) {
           if (review.data.Submitted == "Y") {
@@ -4987,16 +4987,16 @@
             "</div>" +
             "</label>";
           /*slct.innerHTML += '<label class="wrapper select" style="display:none;">' +
-                    '<span class="name">Failure reason</span><span class="required">*</span>' +
-                    '<div class="fmmcosmin">' +
-                    '<select name="Operations_SubStatus" data-name="Operations_SubStatus" data-type="select">' +
-                    '<option value="0">Order already exists</option>' +
-                    '<option value="1">Order cancelled and replaced with new PO and Order</option>' +
-                    '<option value="2">HPE cannot do business with one or more of the Parties involved in the PO</option>' +
-                    '<option value="3">Other</option>' +
-                    '</select>' +
-                    '</div>' +
-                    '</label>';*/
+                              '<span class="name">Failure reason</span><span class="required">*</span>' +
+                              '<div class="fmmcosmin">' +
+                              '<select name="Operations_SubStatus" data-name="Operations_SubStatus" data-type="select">' +
+                              '<option value="0">Order already exists</option>' +
+                              '<option value="1">Order cancelled and replaced with new PO and Order</option>' +
+                              '<option value="2">HPE cannot do business with one or more of the Parties involved in the PO</option>' +
+                              '<option value="3">Other</option>' +
+                              '</select>' +
+                              '</div>' +
+                              '</label>';*/
           slct.innerHTML +=
             '<label class="wrapper text" style="display:' +
             (matchAdmin ? "block" : "none") +
@@ -5133,7 +5133,7 @@
               };
             }
             /*if (obj.Status == "3") obj.SubStatus = "N/A";
-                                      else obj.SubStatus = subStatus.value;*/
+                                                  else obj.SubStatus = subStatus.value;*/
             var poorderid = "";
             if (orderId.value != "N/A") {
               poorderid = orderId.value;
@@ -5220,16 +5220,16 @@
             toggleSubmit();
           });
           /*subStatus.addEventListener("change", function(e) {
-                    var val = e.target.value;
-                    if (val == "0") {
-                        orderId.value = "";
-                        orderId.disabled = false;
-                    } else {
-                        orderId.value = "N/A";
-                        orderId.disabled = true;
-                    }
-                    toggleSubmit();
-                });*/
+                              var val = e.target.value;
+                              if (val == "0") {
+                                  orderId.value = "";
+                                  orderId.disabled = false;
+                              } else {
+                                  orderId.value = "N/A";
+                                  orderId.disabled = true;
+                              }
+                              toggleSubmit();
+                          });*/
           orderId.addEventListener("input", function (e) {
             if (
               (legacyorderid.value == "" || legacyorderid.value == "N/A") &&
@@ -6884,18 +6884,18 @@
             if (config[i].data[j].col == "Requestor_PO_Opp_ID" && val == "OPE-")
               val = "N/A";
             /*if(config[i].data[j].col == "Contact_PreferredLanguage" && val == "N/A") val = "en_US";
-                              else if(config[i].data[j].col == "Contract_ScannedCopy" && val != "N/A") val = '<a href="https://hpe-rfb.it.hpe.com/form/681/attachments/'+reviewPrebuilds.data.app.EntryId+'/Contract_ScannedCopy?name='+val+'" target="_blank">'+val+'</a>';
-                              switch(config[i].data[j].col) {
-                                case "Company_URL":
-                                val = '<a href="'+val+'" target="_blank">'+val+'</a>';
-                                break;
-                                case "Company_LegalDocs":
-                                val = '<a href="https://hpe-rfb.it.hpe.com/form/681/attachments/'+reviewPrebuilds.data.app.EntryId+'/Company_LegalDocs?name='+val+'" target="_blank">'+val+'</a>';
-                                break;
-                                case "Business_GMFirstName":
-                                val = reviewPrebuilds.data.app.Business_GMSalutation + " " + reviewPrebuilds.data.app.Business_GMFirstName + " " + reviewPrebuilds.data.app.Business_GMLastName;
-                                break;
-                            }*/
+                                          else if(config[i].data[j].col == "Contract_ScannedCopy" && val != "N/A") val = '<a href="https://hpe-rfb.it.hpe.com/form/681/attachments/'+reviewPrebuilds.data.app.EntryId+'/Contract_ScannedCopy?name='+val+'" target="_blank">'+val+'</a>';
+                                          switch(config[i].data[j].col) {
+                                            case "Company_URL":
+                                            val = '<a href="'+val+'" target="_blank">'+val+'</a>';
+                                            break;
+                                            case "Company_LegalDocs":
+                                            val = '<a href="https://hpe-rfb.it.hpe.com/form/681/attachments/'+reviewPrebuilds.data.app.EntryId+'/Company_LegalDocs?name='+val+'" target="_blank">'+val+'</a>';
+                                            break;
+                                            case "Business_GMFirstName":
+                                            val = reviewPrebuilds.data.app.Business_GMSalutation + " " + reviewPrebuilds.data.app.Business_GMFirstName + " " + reviewPrebuilds.data.app.Business_GMLastName;
+                                            break;
+                                        }*/
             //console.log("Column: "+ config[i].data[j].col);
             if (
               [
@@ -7360,14 +7360,14 @@
             };
             //console.log(history);
             /*for(i=0;i<history.length;i++) {
-                              console.log("thefor");
-                              if(new Date(history[i].Created).getTime() > new Date(reviewPrebuilds.data.SubmittedTimestamp).getTime()) {
-                                if(i==0) history.unshift(submission);
-                                else history.splice(i, 0, submission);
-                                  break;
-                              }
-                                else if(i == history.length-1) history.push(submission);
-                            }*/
+                                          console.log("thefor");
+                                          if(new Date(history[i].Created).getTime() > new Date(reviewPrebuilds.data.SubmittedTimestamp).getTime()) {
+                                            if(i==0) history.unshift(submission);
+                                            else history.splice(i, 0, submission);
+                                              break;
+                                          }
+                                            else if(i == history.length-1) history.push(submission);
+                                        }*/
           }
         } catch (err) {
           if (reviewPrebuilds.data.Submitted == "Y") {
@@ -7623,16 +7623,16 @@
             "</div>" +
             "</label>";
           /*slct.innerHTML += '<label class="wrapper select" style="display:none;">' +
-                        '<span class="name">Failure reason</span><span class="required">*</span>' +
-                        '<div class="fmmcosmin">' +
-                        '<select name="Operations_SubStatus" data-name="Operations_SubStatus" data-type="select">' +
-                        '<option value="0">Order already exists</option>' +
-                        '<option value="1">Order cancelled and replaced with new PO and Order</option>' +
-                        '<option value="2">HPE cannot do business with one or more of the Parties involved in the PO</option>' +
-                        '<option value="3">Other</option>' +
-                        '</select>' +
-                        '</div>' +
-                        '</label>';*/
+                                  '<span class="name">Failure reason</span><span class="required">*</span>' +
+                                  '<div class="fmmcosmin">' +
+                                  '<select name="Operations_SubStatus" data-name="Operations_SubStatus" data-type="select">' +
+                                  '<option value="0">Order already exists</option>' +
+                                  '<option value="1">Order cancelled and replaced with new PO and Order</option>' +
+                                  '<option value="2">HPE cannot do business with one or more of the Parties involved in the PO</option>' +
+                                  '<option value="3">Other</option>' +
+                                  '</select>' +
+                                  '</div>' +
+                                  '</label>';*/
           slct.innerHTML +=
             '<label class="wrapper text" style="display:' +
             (matchAdmin ? "block" : "none") +
@@ -7980,7 +7980,7 @@
               };
             }
             /*if (obj.Status == "3") obj.SubStatus = "N/A";
-                                          else obj.SubStatus = subStatus.value;*/
+                                                      else obj.SubStatus = subStatus.value;*/
 
             time.timestamp(function (t) {
               obj.Created = t;
@@ -8120,16 +8120,16 @@
             toggleSubmit();
           });
           /*subStatus.addEventListener("change", function(e) {
-                        var val = e.target.value;
-                        if (val == "0") {
-                            orderId.value = "";
-                            orderId.disabled = false;
-                        } else {
-                            orderId.value = "N/A";
-                            orderId.disabled = true;
-                        }
-                        toggleSubmit();
-                    });*/
+                                  var val = e.target.value;
+                                  if (val == "0") {
+                                      orderId.value = "";
+                                      orderId.disabled = false;
+                                  } else {
+                                      orderId.value = "N/A";
+                                      orderId.disabled = true;
+                                  }
+                                  toggleSubmit();
+                              });*/
           orderId.addEventListener("input", function (e) {
             if (
               (legacyorderid.value == "" || legacyorderid.value == "N/A") &&
@@ -9206,13 +9206,13 @@
             width: 110,
           },
           /*{
-                    field: "PO_Value",
-                    title: "Value",
-                    filterable: false,
-                    template: function(d) {
-                        return d.PO_Value + " " + d.PO_Currency;
-                    }
-                },*/
+                              field: "PO_Value",
+                              title: "Value",
+                              filterable: false,
+                              template: function(d) {
+                                  return d.PO_Value + " " + d.PO_Currency;
+                              }
+                          },*/
           {
             field: "PO_Order_ID",
             title: "Order #",
@@ -13477,9 +13477,9 @@
         function () {}
       );
       /*this.node.innerHTML += '<section class="tabs"></div>';
-        this.node.innerHTML += '<section class="container"></div>';
-        this.node.querySelector(".tabs").innerHTML += '<span tab-id="emdm" class="active">EMDM</span><span tab-id="icm" class="">iCertis</span>';
-        this.node.querySelector(".container").innerHTML += '<section tab-id="emdm" class="active"></section><section tab-id="icm" class=""><div class="grid"></div></section>';*/
+              this.node.innerHTML += '<section class="container"></div>';
+              this.node.querySelector(".tabs").innerHTML += '<span tab-id="emdm" class="active">EMDM</span><span tab-id="icm" class="">iCertis</span>';
+              this.node.querySelector(".container").innerHTML += '<section tab-id="emdm" class="active"></section><section tab-id="icm" class=""><div class="grid"></div></section>';*/
     },
     _emdm: {
       _grid: {
@@ -13874,18 +13874,18 @@
               hidden: true,
             },
             /*{
-                      field: "EMDMUpdate",
-                      title: "Update",
-                      filterable: false,
-                      width: "100px",
-                      template: function(d) {
-                        var json = JSON.parse(d.JSON);
-                        var date = json.party[0].lastUpdateDate;
-                        if(date)
-                          return date.split(" ")[0];
-                        return "N/A";
-                      }
-                    },*/
+                                  field: "EMDMUpdate",
+                                  title: "Update",
+                                  filterable: false,
+                                  width: "100px",
+                                  template: function(d) {
+                                    var json = JSON.parse(d.JSON);
+                                    var date = json.party[0].lastUpdateDate;
+                                    if(date)
+                                      return date.split(" ")[0];
+                                    return "N/A";
+                                  }
+                                },*/
             {
               field: "Created",
               title: "Created",
@@ -15322,24 +15322,24 @@
 
             // UPDATE ROLES OBJECT
             /* if (document.querySelector("input[data-name=ADMIN]") != null && document.querySelector("input[data-name=ADMIN]").value == "Y")
-                                           roles = {
-                                               ADMIN: true,
-                                               OPS: {
-                                                   EMEA: true,
-                                                   AMS: true,
-                                                   APJ: true
-                                               },
-                                               SRP: {
-                                                   EMEA: true,
-                                                   AMS: true,
-                                                   APJ: true
-                                               },
-                                               LANG: true,
-                                               STAT: true,
-                                               USER: true,
-                                               CNT: true
-                                           };
-                                       else*/
+                                                       roles = {
+                                                           ADMIN: true,
+                                                           OPS: {
+                                                               EMEA: true,
+                                                               AMS: true,
+                                                               APJ: true
+                                                           },
+                                                           SRP: {
+                                                               EMEA: true,
+                                                               AMS: true,
+                                                               APJ: true
+                                                           },
+                                                           LANG: true,
+                                                           STAT: true,
+                                                           USER: true,
+                                                           CNT: true
+                                                       };
+                                                   else*/
             for (i = 0; i < Object.keys(roles).length; i++) {
               var key = Object.keys(roles)[i];
               console.log("key", key);
@@ -15706,9 +15706,9 @@
 
               const retriggerCase = function (eid, cb) {
                 /*  setTimeout(() => {
-                                                      console.log('eid', eid);
-                                                      cb();
-                                                      }, 2000);*/
+                                                                      console.log('eid', eid);
+                                                                      cb();
+                                                                      }, 2000);*/
 
                 crud.update(
                   "3158",
@@ -19169,7 +19169,12 @@
           const pds = partnerPreferences.form.cfg.dataset;
           const prefs = { ...partnerPreferences.preferences.data };
 
+          console.log('==========Party ID===========', pds.PartyId);
+          console.log('==============row===========', row);
+
+
           crud.read(6091, "PartyId=" + pds.PartyId, (rec) => {
+            console.log('==============rec===========', rec);
             if (
               rec.Rows &&
               rec.Rows.length &&
@@ -19194,7 +19199,7 @@
               row.EntryId,
               partnerPreferences.prepareDataset(row),
               function (d) {
-                console.log("d", d);
+                console.log("===========updated============", d);
                 partnerPreferences.grid.reload();
                 mo.fn.events.closeAll();
               }
@@ -19819,11 +19824,16 @@
             if (mo.dom.modalCTA.getAttribute("state") != "enabled") return;
 
             let foundRec = partnerPreferences.acctSearch.foundRecord;
+            console.log('===========foundRec===========', foundRec);
 
             mo.fn.modal.lock();
-            crud.read(6091, "PartId=" + foundRec.PartId, (rec) => {
+            console.log('this is fouldRec.PartyId', foundRec.PartyId);
+            crud.read(6091, "PartyId=" + foundRec.PartyId, (rec) => {
+              console.log('==============rec1=============', rec.Rows);
               if (rec.Rows) {
                 if (rec.Rows.length) {
+                  console.log('==============open update modal=============', rec);
+
                   mo.fn.modal.unlock();
                   mo.fn.events.closeAll();
                   let prefs = rec.Rows[0].Preferences;
@@ -19834,6 +19844,7 @@
                   );
                 } else {
                   crud.create(6067, foundRec, (res) => {
+                    console.log('==============open update modal after create=============', res);
                     mo.fn.modal.unlock();
                     mo.fn.events.closeAll();
                     partnerPreferences.grid.reload();
@@ -19909,7 +19920,7 @@
           agreementEl = dom.querySelector("[data-name='PurchaseAgreement']");
 
         agreementEl.innerHTML = "";
-
+        console.log('thsi is argList', argList);
         if (argList && argList.length) {
           argList.forEach((item, ndx) => {
             let opt = document.createElement("option");
@@ -19966,7 +19977,7 @@
           validationRes = nbsf.ev.global(cfg),
           partyIdlEl = cfg.dom.querySelector("[data-name='PartyId']"),
           partyId = partyIdlEl.value;
-
+        console.log('this is just before fillPurchaseAgreements')
         partnerPreferences.acctSearch.fillPurchaseAgreements();
 
         if (validationRes.total.fail) return;
@@ -19982,6 +19993,7 @@
         partnerPreferences.acctSearch.findByPartyId(
           partyId,
           (data) => {
+            mo.fn.modal.msg("Party Id " + partyId + " found", 1);
             partnerPreferences.acctSearch.fillPurchaseAgreements(data);
             mo.fn.containerOverlay.hide(hideEl);
           },
