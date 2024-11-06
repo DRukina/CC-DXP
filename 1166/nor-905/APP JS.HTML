@@ -16076,9 +16076,9 @@
                   const prefs = { ...partnerPreferences.preferences.data
                   };
 
-                  crud.read(6091, "PANumber=" + pds.PANumber, (rec) => {
+                  crud.read(6091, "PartyId=" + pds.PartyId, (rec) => {
                       if (rec.Rows && rec.Rows.length && rec.Rows[0].EntryId != row.EntryId) {
-                          mo.fn.modal.msg("Entry for PA " + pds.PANumber + " already exists. Please find it using \"Add a preference\" command", 3);
+                          mo.fn.modal.msg("Entry for PartyId " + pds.PartyId + " already exists. Please find it using \"Add a preference\" command", 3);
                           return;
                       }
                       Object.keys(prefs).forEach(pref => {
@@ -16154,6 +16154,14 @@
                               options: [],
                               values: []
                           }],
+                          [{
+                              label: 'Party Id',
+                              data: 'PartyIdSelect',
+                              required: false,
+                              type: 'select',
+                              options: [],
+                              values: []
+                          }],
                       ]
                   }],
 
@@ -16164,16 +16172,16 @@
                           paIdEl = cfg.dom.querySelector("[data-name='PurchaseAgreementId']"),
                           partyIdEl = cfg.dom.querySelector("[data-name='PartyId']"),
                           emailEl = cfg.dom.querySelector("[data-name='Email']"),
-                          agreementEl = cfg.dom.querySelector("[data-name='PurchaseAgreement']");
+													partyIdSelectEl = cfg.dom.querySelector("[data-name='PartyIdSelect']");
 
-                      partnerPreferences.acctSearch.fillPurchaseAgreements();
+                      partnerPreferences.acctSearch.fillPartyId();
                       emailEl.addEventListener("change", partnerPreferences.acctSearch.emailChanged);
                       searchByIdEl.addEventListener("change", () => {
-                          partnerPreferences.acctSearch.fillPurchaseAgreements();
+													partnerPreferences.acctSearch.fillPartyId();
                       });
                       partyIdEl.addEventListener("input", partnerPreferences.acctSearch.partyIdChanged);
                       paIdEl.addEventListener("input", partnerPreferences.acctSearch.paIdChanged);
-                      agreementEl.addEventListener("input", partnerPreferences.acctSearch.agreementChanged);
+                      partyIdSelectEl.addEventListener("input", partnerPreferences.acctSearch.agreementChanged);
                   },
 
                   validation: function() {
@@ -16584,7 +16592,7 @@
                       let foundRec = partnerPreferences.acctSearch.foundRecord;
 
                       mo.fn.modal.lock();
-                      crud.read(6091, "PANumber=" + foundRec.PANumber, (rec) => {
+                      crud.read(6091, "PartyId=" + foundRec.PartyId, (rec) => {
                           if (rec.Rows) {
                               if (rec.Rows.length) {
                                   mo.fn.modal.unlock();
@@ -16627,22 +16635,25 @@
                   agreementIdEl = cfg.dom.querySelector("[data-name='PurchaseAgreementId']"),
                   partyIdEl = cfg.dom.querySelector("[data-name='PartyId']"),
                   emailEl = cfg.dom.querySelector("[data-name='Email']"),
+									partyIdSelectEl = cfg.dom.querySelector("[data-name='PartyIdSelect']"),
+                  partyIdWrapperEl = partyIdSelectEl.closest(".wrapper"),
+                  partyIdFilled = !!partyIdSelectEl.options.length && partyIdSelectEl.selectedIndex >= 0,
                   agreementEl = cfg.dom.querySelector("[data-name='PurchaseAgreement']"),
-                  agreementWrapperEl = agreementEl.closest(".wrapper"),
-                  agreementsFilled = !!agreementEl.options.length && agreementEl.selectedIndex >= 0,
                   agreementIdValue = agreementIdEl.value;
 
               setVisible(agreementIdEl, searchBy == "PA");
               setVisible(partyIdEl, searchBy == "PI");
               setVisible(emailEl, searchBy == "E");
-              setVisible(agreementEl, searchBy == "E" || searchBy == "PI");
+              setVisible(partyIdSelectEl, searchBy == "E" || searchBy == "PA");
+              setVisible(agreementEl, false);
 
-              if (agreementsFilled) {
-                  agreementEl.removeAttribute("disabled");
-                  agreementWrapperEl.classList.remove("wrapper-disabled");
+
+							if (partyIdFilled && searchBy == "E") {
+                  partyIdSelectEl.removeAttribute("disabled");
+                  partyIdWrapperEl.classList.remove("wrapper-disabled");
               } else {
-                  agreementEl.setAttribute("disabled", "");
-                  agreementWrapperEl.classList.add("wrapper-disabled");
+                  partyIdSelectEl.setAttribute("disabled", "");
+                  partyIdWrapperEl.classList.add("wrapper-disabled");
               }
 
               let allowCTA = !!partnerPreferences.acctSearch.foundRecord;
@@ -16672,6 +16683,29 @@
               }
               partnerPreferences.acctSearch.updateState();
           },
+          fillPartyId: function (argList) {
+            // Populate PurchaseAgreement combobox with values from list
+            let dom = partnerPreferences.acctSearch.config.dom,
+              partyIdEl = dom.querySelector("[data-name='PartyIdSelect']");
+
+            partyIdEl.innerHTML = "";
+
+            if (argList && argList.length) {
+                argList.forEach((item, ndx) => {
+                    let opt = document.createElement("option");
+                    opt.innerHTML = item.PartyId;
+                    opt.setAttribute("value", ndx + 1);
+                    partyIdEl.appendChild(opt);
+                });
+                partyIdEl.selectedIndex = 0;
+                partnerPreferences.acctSearch.foundRecordList = argList;
+                partnerPreferences.acctSearch.foundRecord = argList[0];
+            } else {
+                partnerPreferences.acctSearch.foundRecordList = null;
+                partnerPreferences.acctSearch.foundRecord = null;
+            }
+            partnerPreferences.acctSearch.updateState();
+          },
 
           paIdChanged: function() {
               let cfg = partnerPreferences.acctSearch.config,
@@ -16680,7 +16714,7 @@
                   paId = paIdlEl.value;
 
               if (validationRes.total.fail) {
-                  partnerPreferences.acctSearch.fillPurchaseAgreements();
+                  partnerPreferences.acctSearch.fillPartyId();
                   return;
               }
 
@@ -16694,7 +16728,7 @@
               mo.fn.modal.msg();
               partnerPreferences.acctSearch.findByAgreementId(paId, (data) => {
                   mo.fn.modal.msg("Purchase agreement " + paId + " found", 1);
-                  partnerPreferences.acctSearch.fillPurchaseAgreements(data);
+                  partnerPreferences.acctSearch.fillPartyId(data);
                   mo.fn.containerOverlay.hide(hideEl);
               }, (msg) => {
                   mo.fn.containerOverlay.hide(hideEl);
@@ -16703,14 +16737,12 @@
           },
 
           partyIdChanged: function() {
-              // Populate PurchaseAgreement combobox according to Party Id
               let cfg = partnerPreferences.acctSearch.config,
                   validationRes = nbsf.ev.global(cfg),
                   partyIdlEl = cfg.dom.querySelector("[data-name='PartyId']"),
                   partyId = partyIdlEl.value;
 
-              partnerPreferences.acctSearch.fillPurchaseAgreements();
-
+              partnerPreferences.acctSearch.fillPartyId();
               if (validationRes.total.fail) return;
 
               mo.fn.containerOverlay.show({
@@ -16722,7 +16754,8 @@
               let hideEl = document.querySelector(".dxpModalContent");
               mo.fn.modal.msg();
               partnerPreferences.acctSearch.findByPartyId(partyId, (data) => {
-                  partnerPreferences.acctSearch.fillPurchaseAgreements(data);
+									mo.fn.modal.msg("Party Id " + partyId + " found", 1);
+                  partnerPreferences.acctSearch.fillPartyId(data);
                   mo.fn.containerOverlay.hide(hideEl);
               }, (msg) => {
                   mo.fn.containerOverlay.hide(hideEl);
@@ -16731,7 +16764,7 @@
           },
 
           emailChanged: function() {
-              // Populate PurchaseAgreement combobox according to email
+              // Populate Party Id combobox according to email
               let cfg = partnerPreferences.acctSearch.config,
                   emailEl = cfg.dom.querySelector("[data-name='Email']"),
                   emailWrapper = emailEl.closest(".wrapper"),
@@ -16743,7 +16776,7 @@
 
               let hideEl = document.querySelector(".dxpModalContent");
               mo.fn.modal.msg();
-              partnerPreferences.acctSearch.fillPurchaseAgreements();
+              partnerPreferences.acctSearch.fillPartyId();
               mo.fn.containerOverlay.show({
                   container: hideEl,
                   shadow: true,
@@ -16751,7 +16784,7 @@
               });
 
               partnerPreferences.acctSearch.findByEmail(email, (data) => {
-                  partnerPreferences.acctSearch.fillPurchaseAgreements(data);
+                  partnerPreferences.acctSearch.fillPartyId(data);
                   mo.fn.containerOverlay.hide(hideEl);
               }, (msg) => {
                   mo.fn.containerOverlay.hide(hideEl);
