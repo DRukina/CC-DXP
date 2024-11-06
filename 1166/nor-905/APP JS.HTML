@@ -16146,14 +16146,14 @@
                               type: 'text',
                               validation: ['isEmail', 'maxLen|100']
                           }],
-                          [{
-                              label: 'Purchase Agreement',
-                              data: 'PurchaseAgreement',
-                              required: false,
-                              type: 'select',
-                              options: [],
-                              values: []
-                          }],
+                          // [{
+                          //     label: 'Purchase Agreement',
+                          //     data: 'PurchaseAgreement',
+                          //     required: false,
+                          //     type: 'select',
+                          //     options: [],
+                          //     values: []
+                          // }],
                           [{
                               label: 'Party Id',
                               data: 'PartyIdSelect',
@@ -16171,17 +16171,17 @@
                           searchByIdEl = cfg.dom.querySelector("[data-name='SearchBy']"),
                           paIdEl = cfg.dom.querySelector("[data-name='PurchaseAgreementId']"),
                           partyIdEl = cfg.dom.querySelector("[data-name='PartyId']"),
-                          emailEl = cfg.dom.querySelector("[data-name='Email']"),
-													partyIdSelectEl = cfg.dom.querySelector("[data-name='PartyIdSelect']");
+						  emailEl = cfg.dom.querySelector("[data-name='Email']"),
+						  partyIdSelectEl = cfg.dom.querySelector("[data-name='PartyIdSelect']");
 
                       partnerPreferences.acctSearch.fillPartyId();
                       emailEl.addEventListener("change", partnerPreferences.acctSearch.emailChanged);
                       searchByIdEl.addEventListener("change", () => {
-													partnerPreferences.acctSearch.fillPartyId();
+						partnerPreferences.acctSearch.fillPartyId();
                       });
                       partyIdEl.addEventListener("input", partnerPreferences.acctSearch.partyIdChanged);
                       paIdEl.addEventListener("input", partnerPreferences.acctSearch.paIdChanged);
-                      partyIdSelectEl.addEventListener("input", partnerPreferences.acctSearch.agreementChanged);
+                      partyIdSelectEl.addEventListener("input", partnerPreferences.acctSearch.partyIdSelectChanged);
                   },
 
                   validation: function() {
@@ -16635,20 +16635,19 @@
                   agreementIdEl = cfg.dom.querySelector("[data-name='PurchaseAgreementId']"),
                   partyIdEl = cfg.dom.querySelector("[data-name='PartyId']"),
                   emailEl = cfg.dom.querySelector("[data-name='Email']"),
-									partyIdSelectEl = cfg.dom.querySelector("[data-name='PartyIdSelect']"),
+				  partyIdSelectEl = cfg.dom.querySelector("[data-name='PartyIdSelect']"),
                   partyIdWrapperEl = partyIdSelectEl.closest(".wrapper"),
                   partyIdFilled = !!partyIdSelectEl.options.length && partyIdSelectEl.selectedIndex >= 0,
-                  agreementEl = cfg.dom.querySelector("[data-name='PurchaseAgreement']"),
+                  // agreementEl = cfg.dom.querySelector("[data-name='PurchaseAgreement']"),
                   agreementIdValue = agreementIdEl.value;
 
               setVisible(agreementIdEl, searchBy == "PA");
               setVisible(partyIdEl, searchBy == "PI");
               setVisible(emailEl, searchBy == "E");
               setVisible(partyIdSelectEl, searchBy == "E" || searchBy == "PA");
-              setVisible(agreementEl, false);
+              // setVisible(agreementEl, false);
 
-
-							if (partyIdFilled && searchBy == "E") {
+			  if (partyIdFilled && searchBy == "E") {
                   partyIdSelectEl.removeAttribute("disabled");
                   partyIdWrapperEl.classList.remove("wrapper-disabled");
               } else {
@@ -16660,29 +16659,29 @@
               mo.dom.modalCTA.setAttribute("state", allowCTA ? "enabled" : "disabled");
           },
 
-          fillPurchaseAgreements: function(argList) {
-              // Populate PurchaseAgreement combobox with values from list
-              let dom = partnerPreferences.acctSearch.config.dom,
-                  agreementEl = dom.querySelector("[data-name='PurchaseAgreement']");
+          // fillPurchaseAgreements: function(argList) {
+          //     // Populate PurchaseAgreement combobox with values from list
+          //     let dom = partnerPreferences.acctSearch.config.dom,
+          //         agreementEl = dom.querySelector("[data-name='PurchaseAgreement']");
 
-              agreementEl.innerHTML = "";
+          //     agreementEl.innerHTML = "";
 
-              if (argList && argList.length) {
-                  argList.forEach((item, ndx) => {
-                      let opt = document.createElement("option");
-                      opt.innerHTML = item.text;
-                      opt.setAttribute("value", ndx + 1);
-                      agreementEl.appendChild(opt);
-                  });
-                  agreementEl.selectedIndex = 0;
-                  partnerPreferences.acctSearch.foundRecordList = argList;
-                  partnerPreferences.acctSearch.foundRecord = argList[0];
-              } else {
-                  partnerPreferences.acctSearch.foundRecordList = null;
-                  partnerPreferences.acctSearch.foundRecord = null;
-              }
-              partnerPreferences.acctSearch.updateState();
-          },
+          //     if (argList && argList.length) {
+          //         argList.forEach((item, ndx) => {
+          //             let opt = document.createElement("option");
+          //             opt.innerHTML = item.text;
+          //             opt.setAttribute("value", ndx + 1);
+          //             agreementEl.appendChild(opt);
+          //         });
+          //         agreementEl.selectedIndex = 0;
+          //         partnerPreferences.acctSearch.foundRecordList = argList;
+          //         partnerPreferences.acctSearch.foundRecord = argList[0];
+          //     } else {
+          //         partnerPreferences.acctSearch.foundRecordList = null;
+          //         partnerPreferences.acctSearch.foundRecord = null;
+          //     }
+          //     partnerPreferences.acctSearch.updateState();
+          // },
           fillPartyId: function (argList) {
             // Populate PurchaseAgreement combobox with values from list
             let dom = partnerPreferences.acctSearch.config.dom,
@@ -16754,7 +16753,7 @@
               let hideEl = document.querySelector(".dxpModalContent");
               mo.fn.modal.msg();
               partnerPreferences.acctSearch.findByPartyId(partyId, (data) => {
-									mo.fn.modal.msg("Party Id " + partyId + " found", 1);
+				  mo.fn.modal.msg("Party Id " + partyId + " found", 1);
                   partnerPreferences.acctSearch.fillPartyId(data);
                   mo.fn.containerOverlay.hide(hideEl);
               }, (msg) => {
@@ -16792,7 +16791,7 @@
               });
           },
 
-          agreementChanged: function(e) {
+          partyIdSelectChanged: function(e) {
               let recList = partnerPreferences.acctSearch.foundRecordList;
               partnerPreferences.acctSearch.foundRecord = recList[e.target.selectedIndex];
               partnerPreferences.acctSearch.updateState();
